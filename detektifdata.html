@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekspedisi Angka Pustaka Ceria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --secondary: #FF9F43;
+            --success: #2ECC71;
+            --danger: #EE5253;
+            --bg-color: #E0F7FA;
+            --card-bg: #FFFFFF;
+            --text-color: #2C3E50;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        #game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 25px;
+            border: 4px solid #B2EBF2;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .story-box {
+            background-color: #FFF9C4;
+            border-left: 6px solid #FBC02D;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #E0E0E0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--secondary);
+            transition: width 0.4s ease;
+        }
+
+        /* Forms & Interactive elements */
+        .raw-data-box {
+            background: #E8F5E9;
+            border: 2px dashed #66BB6A;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .tally-table, .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .tally-table th, .tally-table td, .data-table th, .data-table td {
+            border: 2px solid #B2DFDB;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .tally-table th, .data-table th {
+            background-color: #E0F2F1;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #357ABD;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #357ABD;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #357ABD;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        .btn-secondary {
+            background-color: #95A5A6;
+            box-shadow: 0 4px 0 #7F8C8D;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 0 #7F8C8D;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #F0F3F4;
+            border: 2px solid #BDC3C7;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background-color: #E5E8E8;
+            border-color: var(--primary);
+        }
+
+        .option-btn.selected {
+            background-color: #D4E6F1;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .question-block {
+            background-color: #F9F9F9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #E0E0E0;
+        }
+
+        /* Visual Charts */
+        .bar-chart-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 150px;
+            border-bottom: 3px solid #333;
+            border-left: 3px solid #333;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        .bar {
+            width: 40px;
+            background-color: var(--primary);
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: white;
+            font-weight: bold;
+            padding-top: 5px;
+        }
+
+        /* Animation */
+        @keyframes correct-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .correct-anim {
+            animation: correct-pop 0.4s ease-in-out;
+            border: 3px solid var(--success) !important;
+        }
+
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .hidden { display: none; }
+
+        .pictogram-icon {
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1 style="font-size: 1.8em;">📚 Ekspedisi Angka Pustaka Ceria 📊</h1>
+    <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">Petugas Kecil Perpustakaan</p>
+
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <div id="pos1" class="pos-screen">
+        <h2>Pos 1: Kumpulkan Data</h2>
+        <div class="story-box">
+            Halo Petugas Kecil! Hari ini kita perlu mengumpulkan data buah favorit dari 10 pengunjung pertama perpustakaan dengan cara bertanya langsung. Yuk, bantu mengelompokkan data mentah ini!
+        </div>
+        
+        <div class="raw-data-box">
+            Data Mentah Buah Favorit:<br>
+            <span style="color: #27AE60;">[ Pisang, Apel, Pisang, Jeruk, Pisang, Apel, Pisang, Jeruk, Pisang, Apel ]</span>
+        </div>
+
+        <p><b>Tugas 1:</b> Hitung dan masukkan jumlah turus yang sesuai dengan mencatat data di atas!</p>
+        <table class="tally-table">
+            <tr>
+                <th>Buah</th>
+                <th>Turus (Hitungan)</th>
+                <th>Aksi</th>
+            </tr>
+            <tr>
+                <td>Pisang</td>
+                <td id="tally-pisang-text">-</td>
+                <td>
+                    <button class="btn btn-small" onclick="addTally('pisang')">+ Turus</button>
+                    <button class="btn btn-small btn-secondary" onclick="resetTally('pisang')">Reset</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Apel</td>
+                <td id="tally-apel-text">-</td>
+                <td>
+                    <button class="btn btn-small" onclick="addTally('apel')">+ Turus</button>
+                    <button class="btn btn-small btn-secondary" onclick="resetTally('apel')">Reset</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Jeruk</td>
+                <td id="tally-jeruk-text">-</td>
+                <td>
+                    <button class="btn btn-small" onclick="addTally('jeruk')">+ Turus</button>
+                    <button class="btn btn-small btn-secondary" onclick="resetTally('jeruk')">Reset</button>
+                </td>
+            </tr>
+        </table>
+
+        <div class="question-block">
+            <p><b>Pertanyaan:</b> Buah manakah yang paling banyak disukai oleh siswa?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q1', 'Apel', this)">Apel</div>
+                <div class="option-btn" onclick="selectOption('q1', 'Pisang', this)">Pisang</div>
+                <div class="option-btn" onclick="selectOption('q1', 'Jeruk', this)">Jeruk</div>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <div></div>
+            <button class="btn" onclick="validatePos1()">Lanjut ke Pos 2 ➡️</button>
+        </div>
+    </div>
+
+    <div id="pos2" class="pos-screen hidden">
+        <h2>Pos 2: Sajikan Data</h2>
+        <div class="story-box">
+            Hebat! Sekarang data perlu disajikan agar pengunjung lain mudah membacanya. Pilih bentuk penyajian data dan latihan membaca grafik!
+        </div>
+
+        <div class="question-block">
+            <p>1. Jika kita ingin menampilkan data dengan simbol gambar menarik di mana 1 gambar mewakili beberapa buku, bentuk penyajian apa yang paling tepat?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q2_1', 'tabel', this)">Tabel Frekuensi</div>
+                <div class="option-btn" onclick="selectOption('q2_1', 'piktogram', this)">Piktogram</div>
+                <div class="option-btn" onclick="selectOption('q2_1', 'batang', this)">Diagram Batang</div>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p>2. Membaca Piktogram Peminjaman Buku:</p>
+            <p style="text-align: center; margin: 10px 0;">
+                Hari Senin: 📖 📖 📖<br>
+                <i>Catatan: Setiap 1 simbol 📖 mewakili <b>5 buku</b>.</i>
+            </p>
+            <p>Berapa total buku yang dipinjam pada hari Senin?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q2_2', '3', this)">3 Buku</div>
+                <div class="option-btn" onclick="selectOption('q2_2', '8', this)">8 Buku</div>
+                <div class="option-btn" onclick="selectOption('q2_2', '15', this)">15 Buku</div>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p>3. Membaca Diagram Batang:</p>
+            <div class="bar-chart-container">
+                <div style="text-align: center;"><div class="bar" style="height: 60px;">3</div>Kelas 3</div>
+                <div style="text-align: center;"><div class="bar" style="height: 120px;">6</div>Kelas 4</div>
+                <div style="text-align: center;"><div class="bar" style="height: 100px;">5</div>Kelas 5</div>
+            </div>
+            <p>Kelas manakah yang paling banyak mengunjungi perpustakaan?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q2_3', 'Kelas 3', this)">Kelas 3</div>
+                <div class="option-btn" onclick="selectOption('q2_3', 'Kelas 4', this)">Kelas 4</div>
+                <div class="option-btn" onclick="selectOption('q2_3', 'Kelas 5', this)">Kelas 5</div>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="btn btn-secondary" onclick="goToPos(1)">⬅️ Kembali</button>
+            <button class="btn" onclick="validatePos2()">Lanjut ke Pos 3 ➡️</button>
+        </div>
+    </div>
+
+    <div id="pos3" class="pos-screen hidden">
+        <h2>Pos 3: Analisis Data</h2>
+        <div class="story-box">
+            Mari kita bandingkan data peminjaman buku antara dua petugas kecil: Budi dan Siti selama 3 bulan!
+        </div>
+
+        <table class="data-table">
+            <tr>
+                <th>Nama</th>
+                <th>Bulan 1</th>
+                <th>Bulan 2</th>
+                <th>Bulan 3</th>
+            </tr>
+            <tr>
+                <td>Budi</td>
+                <td>4 buku</td>
+                <td>7 buku</td>
+                <td>10 buku</td>
+            </tr>
+            <tr>
+                <td>Siti</td>
+                <td>3 buku</td>
+                <td>6 buku</td>
+                <td>9 buku</td>
+            </tr>
+        </table>
+
+        <div class="question-block">
+            <p>1. Berapa selisih total buku yang dibaca Budi dan Siti selama 3 bulan?</p>
+            <p><i>(Total Budi: 4+7+10 = 21, Total Siti: 3+6+9 = 18)</i></p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q3_1', '2', this)">2 Buku</div>
+                <div class="option-btn" onclick="selectOption('q3_1', '3', this)">3 Buku</div>
+                <div class="option-btn" onclick="selectOption('q3_1', '4', this)">4 Buku</div>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p>2. Gunakan simbol perbandingan yang tepat untuk: Total Budi [ ... ] Total Siti</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q3_2', '>', this)"> &gt; (Lebih Dari)</div>
+                <div class="option-btn" onclick="selectOption('q3_2', '<', this)"> &lt; (Kurang Dari)</div>
+                <div class="option-btn" onclick="selectOption('q3_2', '=', this)"> = (Sama Dengan)</div>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p>3. Perhatikan pola bertambahnya buku Budi tiap bulan: <b>4, 7, 10, ...</b> Berapa jumlah buku Budi pada Bulan ke-4 jika polanya konsisten?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q3_3', '12', this)">12 Buku</div>
+                <div class="option-btn" onclick="selectOption('q3_3', '13', this)">13 Buku</div>
+                <div class="option-btn" onclick="selectOption('q3_3', '14', this)">14 Buku</div>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="btn btn-secondary" onclick="goToPos(2)">⬅️ Kembali</button>
+            <button class="btn" onclick="validatePos3()">Lanjut ke Pos 4 ➡️</button>
+        </div>
+    </div>
+
+    <div id="pos4" class="pos-screen hidden">
+        <h2>Pos 4: Prediksi</h2>
+        <div class="story-box">
+            Data membantu kita memperkirakan masa depan. Tapi ingat, prediksi berbeda dengan kepastian!
+        </div>
+
+        <p>Data Pengunjung Perpustakaan Mingguan:</p>
+        <ul style="margin: 10px 0 20px 20px;">
+            <li>Minggu 1: 10 siswa</li>
+            <li>Minggu 2: 15 siswa</li>
+            <li>Minggu 3: 20 siswa</li>
+            <li>Minggu 4: 25 siswa</li>
+        </ul>
+
+        <div class="question-block">
+            <p>1. Berdasarkan pola kenaikan di atas, berapa prediksi jumlah pengunjung pada <b>Minggu 5</b>?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q4_1', '28', this)">28 Siswa</div>
+                <div class="option-btn" onclick="selectOption('q4_1', '30', this)">30 Siswa</div>
+                <div class="option-btn" onclick="selectOption('q4_1', '35', this)">35 Siswa</div>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p>2. Mengapa hasil prediksi kita untuk Minggu ke-5 <b>belum tentu pasti terjadi</b> persis sama?</p>
+            <div class="options-grid">
+                <div class="option-btn" onclick="selectOption('q4_2', 'A', this)">Karena matematika selalu salah</div>
+                <div class="option-btn" onclick="selectOption('q4_2', 'B', this)">Karena bisa ada faktor luar (seperti hujan keras atau ujian) yang membuat siswa tidak datang</div>
+                <div class="option-btn" onclick="selectOption('q4_2', 'C', this)">Karena jumlah pengunjung tidak bisa dihitung</div>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="btn btn-secondary" onclick="goToPos(3)">⬅️ Kembali</button>
+            <button class="btn" onclick="validatePos4()">Lanjut ke Pos 5 ➡️</button>
+        </div>
+    </div>
+
+    <div id="pos5" class="pos-screen hidden">
+        <h2>Pos 5: Simpulkan</h2>
+        <div class="story-box">
+            Tugas terakhir! Tarik kesimpulan yang benar-benar didukung oleh data, tanpa membuat anggapan berlebihan.
+        </div>
+
+        <p><b>Data Pengunjung Perpustakaan (5 Hari):</b></p>
+        <table class="data-table">
+            <tr>
+                <th>Senin</th>
+                <th>Selasa</th>
+                <th>Rabu</th>
+                <th>Kamis</th>
+                <th>Jumat</th>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>22</td>
+                <td>18</td>
+                <td>25</td>
+                <td>15</td>
+            </tr>
+        </table>
+
+        <div class="question-block">
+            <p>Pilihlah kesimpulan yang paling tepat dan jujur berdasarkan data di atas:</p>
+            <div class="options-grid" style="grid-template-columns: 1fr;">
+                <div class="option-btn" onclick="selectOption('q5', 'A', this)">A. Pengunjung paling banyak terjadi pada hari Kamis, dan paling sedikit pada hari Jumat.</div>
+                <div class="option-btn" onclick="selectOption('q5', 'B', this)">B. Hari Jumat selalu sepi karena semua siswa tidak suka membaca buku.</div>
+                <div class="option-btn" onclick="selectOption('q5', 'C', this)">C. Minggu depan pengunjung hari Kamis pasti berjumlah 50 orang.</div>
+            </div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="btn btn-secondary" onclick="goToPos(4)">⬅️ Kembali</button>
+            <button class="btn" style="background-color: var(--success);" onclick="validatePos5()">Selesai & Lihat Hasil 🎉</button>
+        </div>
+    </div>
+
+    <div id="screen-finish" class="pos-screen hidden">
+        <h2>🏆 Ekspedisi Selesai! 🏆</h2>
+        <div class="story-box" style="text-align: center;">
+            <p id="final-message" style="font-size: 1.2em; font-weight: bold;"></p>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <p style="font-size: 1.1em;">Skor Total Kamu:</p>
+            <h1 id="final-score" style="font-size: 3.5em; color: var(--secondary);">0 / 100</h1>
+        </div>
+
+        <div class="question-block">
+            <h3>📋 Ringkasan Hasil Pos:</h3>
+            <ul id="summary-list" style="list-style-type: none; padding: 0; line-height: 2em;">
+                </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="restartGame()">🔄 Main Lagi dari Awal</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // State Management
+    let state = {
+        tallies: { pisang: 0, apel: 0, jeruk: 0 },
+        answers: {},
+        scores: { pos1: false, pos2: false, pos3: false, pos4: false, pos5: false }
+    };
+
+    // Tally Functions (Pos 1)
+    function addTally(fruit) {
+        state.tallies[fruit]++;
+        updateTallyDisplay(fruit);
+    }
+
+    function resetTally(fruit) {
+        state.tallies[fruit] = 0;
+        updateTallyDisplay(fruit);
+    }
+
+    function updateTallyDisplay(fruit) {
+        let count = state.tallies[fruit];
+        let text = "";
+        for (let i = 0; i < count; i++) {
+            text += "| ";
+        }
+        document.getElementById(`tally-${fruit}-text`).innerText = text || "-";
+    }
+
+    // Generic Option Selection
+    function selectOption(questionId, value, element) {
+        state.answers[questionId] = value;
+        
+        // Visual Selection Logic
+        let parent = element.parentElement;
+        let options = parent.getElementsByClassName('option-btn');
+        for (let opt of options) {
+            opt.classList.remove('selected');
+        }
+        element.classList.add('selected');
+    }
+
+    // Navigation and Progress
+    function updateProgress(posNum) {
+        let percent = (posNum / 5) * 100;
+        document.getElementById('progress-bar').style.width = percent + '%';
+    }
+
+    function goToPos(posNum) {
+        document.querySelectorAll('.pos-screen').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`pos${posNum}`).classList.remove('hidden');
+        updateProgress(posNum - 1);
+    }
+
+    // Validations
+    function validatePos1() {
+        // Correct answers: Pisang=5, Apel=3, Jeruk=2; Max=Pisang
+        let t = state.tallies;
+        let isTallyCorrect = (t.pisang === 5 && t.apel === 3 && t.jeruk === 2);
+        let isQCorrect = (state.answers['q1'] === 'Pisang');
+
+        if (isTallyCorrect && isQCorrect) {
+            state.scores.pos1 = true;
+            triggerSuccessAnim('pos1');
+            setTimeout(() => goToPos(2), 500);
+        } else {
+            alert("Ups! Periksa kembali jumlah turus atau jawaban buah paling banyak. (Petunjuk: Hitung dengan teliti data mentahnya ya!)");
+        }
+    }
+
+    function validatePos2() {
+        let q1 = state.answers['q2_1'] === 'piktogram';
+        let q2 = state.answers['q2_2'] === '15';
+        let q3 = state.answers['q2_3'] === 'Kelas 4';
+
+        if (q1 && q2 && q3) {
+            state.scores.pos2 = true;
+            triggerSuccessAnim('pos2');
+            setTimeout(() => goToPos(3), 500);
+        } else {
+            alert("Ada jawaban yang belum tepat di Pos 2. Coba periksa kembali!");
+        }
+    }
+
+    function validatePos3() {
+        let q1 = state.answers['q3_1'] === '3';
+        let q2 = state.answers['q3_2'] === '>';
+        let q3 = state.answers['q3_3'] === '13';
+
+        if (q1 && q2 && q3) {
+            state.scores.pos3 = true;
+            triggerSuccessAnim('pos3');
+            setTimeout(() => goToPos(4), 500);
+        } else {
+            alert("Jawaban di Pos 3 belum tepat. Perhatikan hitungan selisih dan pola angkanya!");
+        }
+    }
+
+    function validatePos4() {
+        let q1 = state.answers['q4_1'] === '30';
+        let q2 = state.answers['q4_2'] === 'B';
+
+        if (q1 && q2) {
+            state.scores.pos4 = true;
+            triggerSuccessAnim('pos4');
+            setTimeout(() => goToPos(5), 500);
+        } else {
+            alert("Periksa kembali prediksi dan alasan reflektifmu di Pos 4!");
+        }
+    }
+
+    function validatePos5() {
+        let q1 = state.answers['q5'] === 'A';
+
+        if (q1) {
+            state.scores.pos5 = true;
+            triggerSuccessAnim('pos5');
+            setTimeout(() => showFinishScreen(), 500);
+        } else {
+            alert("Pilihlah kesimpulan yang benar-benar sesuai data tanpa berasumsi lebih!");
+        }
+    }
+
+    function triggerSuccessAnim(posId) {
+        let el = document.getElementById(posId);
+        el.classList.add('correct-anim');
+        setTimeout(() => el.classList.remove('correct-anim'), 400);
+    }
+
+    function showFinishScreen() {
+        document.querySelectorAll('.pos-screen').forEach(el => el.classList.add('hidden'));
+        document.getElementById('screen-finish').classList.remove('hidden');
+        updateProgress(5);
+
+        // Calculate Score
+        let correctCount = 0;
+        for (let key in state.scores) {
+            if (state.scores[key]) correctCount++;
+        }
+        let totalScore = correctCount * 20;
+
+        document.getElementById('final-score').innerText = `${totalScore} / 100`;
+
+        // Message
+        let msg = "";
+        if (totalScore === 100) {
+            msg = "🌟 Luar Biasa! Kamu adalah Petugas Kecil Perpustakaan Master Data!";
+        } else if (totalScore >= 60) {
+            msg = "👍 Kerja Bagus! Kamu sudah memahami pengelolaan data dengan baik!";
+        } else {
+            msg = "💪 Jangan Menyerah! Kamu bisa mencoba lagi untuk meningkatkan pemahamanmu!";
+        }
+        document.getElementById('final-message').innerText = msg;
+
+        // Summary
+        let summaryHtml = `
+            <li>Pos 1 (Kumpulkan Data): ${state.scores.pos1 ? '✅ Dikuasai' : '❌ Perlu Diulang'}</li>
+            <li>Pos 2 (Sajikan Data): ${state.scores.pos2 ? '✅ Dikuasai' : '❌ Perlu Diulang'}</li>
+            <li>Pos 3 (Analisis Data): ${state.scores.pos3 ? '✅ Dikuasai' : '❌ Perlu Diulang'}</li>
+            <li>Pos 4 (Prediksi Data): ${state.scores.pos4 ? '✅ Dikuasai' : '❌ Perlu Diulang'}</li>
+            <li>Pos 5 (Tarik Kesimpulan): ${state.scores.pos5 ? '✅ Dikuasai' : '❌ Perlu Diulang'}</li>
+        `;
+        document.getElementById('summary-list').innerHTML = summaryHtml;
+    }
+
+    function restartGame() {
+        state = {
+            tallies: { pisang: 0, apel: 0, jeruk: 0 },
+            answers: {},
+            scores: { pos1: false, pos2: false, pos3: false, pos4: false, pos5: false }
+        };
+        
+        // Reset UI
+        ['pisang', 'apel', 'jeruk'].forEach(resetTally);
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+        
+        goToPos(1);
+    }
+
+    // Initialize
+    updateProgress(0);
+</script>
+
+</body>
+</html>
