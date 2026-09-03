@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detektif Data: Misteri Kotak Kejutan</title>
+  <style>
+    :root {
+      --primary: #4A90E2;
+      --secondary: #FF9F43;
+      --success: #2ECC71;
+      --danger: #EE5253;
+      --dark: #2C3E50;
+      --light: #F8EFBA;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #FECA57;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #game-container {
+      background: white;
+      border: 4px solid var(--dark);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 700px;
+      padding: 25px;
+      box-shadow: 0 10px 0 var(--dark);
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px dashed var(--dark);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .score-board {
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: var(--light);
+      padding: 8px 15px;
+      border-radius: 10px;
+      border: 2px solid var(--dark);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--dark);
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--dark);
+      transition: transform 0.1s;
+      margin: 5px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 var(--dark);
+    }
+
+    .btn-option {
+      background: #54A0FF;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    /* Styles Babak 1 */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 200px;
+      border-left: 3px solid var(--dark);
+      border-bottom: 3px solid var(--dark);
+      padding-top: 20px;
+      margin: 20px 0;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 20%;
+    }
+
+    .bar {
+      width: 100%;
+      background: var(--secondary);
+      border: 2px solid var(--dark);
+      border-radius: 5px 5px 0 0;
+      transition: height 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Styles Babak 2 */
+    .marbles-box {
+      border: 3px solid var(--dark);
+      background: #E0E0E0;
+      border-radius: 15px;
+      padding: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      min-height: 100px;
+      margin-bottom: 15px;
+    }
+
+    .marble {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 2px solid var(--dark);
+      box-shadow: inset -4px -4px 0 rgba(0,0,0,0.2);
+    }
+
+    .feedback {
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .feedback.correct {
+      background: #D4EDDA;
+      color: #155724;
+      border: 2px solid #C3E6CB;
+    }
+
+    .feedback.wrong {
+      background: #F8D7DA;
+      color: #721C24;
+      border: 2px solid #F5C6CB;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Pop-up Animasi Sukses */
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .animate-bounce {
+      animation: bounce 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <div class="header">
+    <h2 id="game-title" style="margin: 0; color: var(--dark);">🔍 Detektif Data</h2>
+    <div class="score-board">Skor: <span id="score">0</span></div>
+  </div>
+
+  <div id="screen-intro">
+    <h3>Selamat Datang, Detektif Cilik! 🕵️‍♂️</h3>
+    <p>Kota sedang dalam misteri! Bantu kami memecahkan teka-teki dengan mengumpulkan data dan menganalisis peluang di Kotak Kejutan.</p>
+    <button class="btn" onclick="startBabak1()">Mulai Penyelidikan!</button>
+  </div>
+
+  <div id="screen-babak1" class="hidden">
+    <h3>Babak 1: Survei Jajanan Favorit 🧃</h3>
+    <p id="b1-instruction">Klik tombol di bawah untuk mencatat pilihan jajanan teman sekelasmu (Sisa: <span id="survey-count">10</span> siswa):</p>
+    
+    <div id="survey-buttons">
+      <button class="btn" onclick="addSurvey('Cilok')">🍡 Cilok</button>
+      <button class="btn" onclick="addSurvey('Es Krim')">🍦 Es Krim</button>
+      <button class="btn" onclick="addSurvey('Boba')">🧋 Boba</button>
+      <button class="btn" onclick="addSurvey('Donat')">🍩 Donat</button>
+    </div>
+
+    <div class="bar-chart" id="chart">
+      <div class="bar-group"><div class="bar" id="bar-Cilok" style="height: 0%;">0</div><small>Cilok</small></div>
+      <div class="bar-group"><div class="bar" id="bar-EsKrim" style="height: 0%; background: #FF6B6B;">0</div><small>Es Krim</small></div>
+      <div class="bar-group"><div class="bar" id="bar-Boba" style="height: 0%; background: #1DD1A1;">0</div><small>Boba</small></div>
+      <div class="bar-group"><div class="bar" id="bar-Donat" style="height: 0%; background: #FECA57;">0</div><small>Donat</small></div>
+    </div>
+
+    <div id="b1-questions" class="hidden">
+      <h4 id="b1-q-text">Pertanyaan...</h4>
+      <div id="b1-options"></div>
+    </div>
+  </div>
+
+  <div id="screen-babak2" class="hidden">
+    <h3>Babak 2: Misteri Kotak Kejutan 📦</h3>
+    <p>Level <span id="b2-level">1</span>/3</p>
+    <p>Lihat isi kotak kelereng di bawah ini:</p>
+    
+    <div class="marbles-box" id="marbles-container"></div>
+
+    <h4 id="b2-q-text">Jika diambil 1 kelereng secara acak, bagaimana kemungkinannya?</h4>
+    
+    <div>
+      <button class="btn" onclick="checkAnswerB2('Pasti')">Pasti</button>
+      <button class="btn" onclick="checkAnswerB2('Mungkin')">Mungkin</button>
+      <button class="btn" onclick="checkAnswerB2('Mustahil')">Mustahil</button>
+    </div>
+  </div>
+
+  <div id="feedback" class="feedback"></div>
+
+  <div id="screen-end" class="hidden">
+    <h2>🎉 Kasus Terpecahkan!</h2>
+    <p>Laporan analisis data berhasil disusun dengan sempurna.</p>
+    <h3>Skor Akhir Kamu: <span id="final-score">0</span></h3>
+    <p id="appreciation-msg"></p>
+    <button class="btn" onclick="location.reload()">Main Lagi 🔄</button>
+  </div>
+</div>
+
+<script>
+  let score = 0;
+  let surveyData = { 'Cilok': 0, 'Es Krim': 0, 'Boba': 0, 'Donat': 0 };
+  let surveyTotal = 0;
+  const maxSurvey = 10;
+  let b1Questions = [];
+  let currentB1Q = 0;
+
+  // Data Level Babak 2
+  const b2Levels = [
+    {
+      marbles: ['red', 'red', 'red', 'red', 'red'],
+      targetColor: 'Merah',
+      correct: 'Pasti',
+      reason: 'Semua kelereng di dalam kotak berwarna Merah, jadi kelereng Merah PASTI terambil.'
+    },
+    {
+      marbles: ['red', 'red', 'blue', 'blue', 'green'],
+      targetColor: 'Kuning',
+      correct: 'Mustahil',
+      reason: 'Tidak ada kelereng Kuning sama sekali di dalam kotak, jadi MUSTAHIL terambil warna Kuning.'
+    },
+    {
+      marbles: ['red', 'blue', 'blue', 'blue', 'green'],
+      targetColor: 'Biru',
+      correct: 'Mungkin',
+      reason: 'Ada kelereng warna Biru dan warna lainnya, jadi kelereng Biru MUNGKIN terambil.'
+    }
+  ];
+  let currentB2Level = 0;
+
+  function updateScore(pts) {
+    score += pts;
+    document.getElementById('score').innerText = score;
+    const container = document.getElementById('game-container');
+    container.classList.add('animate-bounce');
+    setTimeout(() => container.classList.remove('animate-bounce'), 400);
+  }
+
+  function showFeedback(text, isCorrect) {
+    const fb = document.getElementById('feedback');
+    fb.innerHTML = text;
+    fb.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
+    fb.style.display = 'block';
+  }
+
+  function hideFeedback() {
+    document.getElementById('feedback').style.display = 'none';
+  }
+
+  // --- BABAK 1 LOGIC ---
+  function startBabak1() {
+    document.getElementById('screen-intro').classList.add('hidden');
+    document.getElementById('screen-babak1').classList.remove('hidden');
+  }
+
+  function addSurvey(item) {
+    if (surveyTotal < maxSurvey) {
+      surveyData[item]++;
+      surveyTotal++;
+      document.getElementById('survey-count').innerText = maxSurvey - surveyTotal;
+      
+      // Update Chart
+      const heightPercent = (surveyData[item] / maxSurvey) * 100 * 1.5; // dikali 1.5 agar visual lebih tinggi
+      const barId = 'bar-' + item.replace(' ', '');
+      const barElem = document.getElementById(barId);
+      barElem.style.height = Math.max(heightPercent, 10) + '%';
+      barElem.innerText = surveyData[item];
+
+      if (surveyTotal === maxSurvey) {
+        document.getElementById('survey-buttons').classList.add('hidden');
+        document.getElementById('b1-instruction').innerText = "Data survei terkumpul! Sekarang jawab pertanyaan berikut berdasarkan diagram:";
+        generateB1Questions();
+        showB1Question();
+      }
+    }
+  }
+
+  function generateB1Questions() {
+    // Mencari jajanan terbanyak
+    let maxItem = Object.keys(surveyData).reduce((a, b) => surveyData[a] > surveyData[b] ? a : b);
+    
+    // Hitung selisih Cilok & Donat
+    let diff = Math.abs(surveyData['Cilok'] - surveyData['Donat']);
+
+    b1Questions = [
+      {
+        q: `Berdasarkan diagram, jajanan manakah yang paling banyak disukai teman sekelas?`,
+        options: ['Cilok', 'Es Krim', 'Boba', 'Donat'],
+        correct: maxItem
+      },
+      {
+        q: `Berapakah selisih antara jumlah penyuka Cilok (${surveyData['Cilok']}) dan Donat (${surveyData['Donat']})?`,
+        options: [diff.toString(), (diff + 1).toString(), (diff > 0 ? diff - 1 : diff + 2).toString()],
+        correct: diff.toString()
+      }
+    ];
+  }
+
+  function showB1Question() {
+    hideFeedback();
+    if (currentB1Q < b1Questions.length) {
+      const qData = b1Questions[currentB1Q];
+      document.getElementById('b1-q-text').innerText = qData.q;
+      const optsDiv = document.getElementById('b1-options');
+      optsDiv.innerHTML = '';
+      
+      // Acak urutan pilihan
+      const shuffled = [...qData.options].sort(() => Math.random() - 0.5);
+      
+      shuffled.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-option';
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswerB1(opt, qData.correct);
+        optsDiv.appendChild(btn);
+      });
+      document.getElementById('b1-questions').classList.remove('hidden');
+    } else {
+      // Pindah ke Babak 2
+      document.getElementById('screen-babak1').classList.add('hidden');
+      startBabak2();
+    }
+  }
+
+  function checkAnswerB1(selected, correct) {
+    if (selected === correct) {
+      updateScore(20);
+      showFeedback("✨ Jawaban Benar! Kamu hebat membaca data.", true);
+    } else {
+      showFeedback(`❌ Kurang tepat. Jawaban yang benar adalah ${correct}.`, false);
+    }
+    currentB1Q++;
+    setTimeout(showB1Question, 2000);
+  }
+
+  // --- BABAK 2 LOGIC ---
+  function startBabak2() {
+    hideFeedback();
+    document.getElementById('screen-babak2').classList.remove('hidden');
+    loadB2Level();
+  }
+
+  function loadB2Level() {
+    hideFeedback();
+    const level = b2Levels[currentB2Level];
+    document.getElementById('b2-level').innerText = currentB2Level + 1;
+    
+    // Tampilkan Kelereng
+    const container = document.getElementById('marbles-container');
+    container.innerHTML = '';
+    
+    const colorMap = { 'red': '#EE5253', 'blue': '#0ABDE3', 'green': '#1DD1A1' };
+    
+    level.marbles.forEach(color => {
+      const m = document.createElement('div');
+      m.className = 'marble';
+      m.style.backgroundColor = colorMap[color];
+      container.appendChild(m);
+    });
+
+    document.getElementById('b2-q-text').innerText = 
+      `Jika 1 kelereng diambil secara acak, kemungkinan terambil kelereng warna ${level.targetColor} adalah...`;
+  }
+
+  function checkAnswerB2(choice) {
+    const level = b2Levels[currentB2Level];
+    if (choice === level.correct) {
+      updateScore(30);
+      showFeedback(`✨ Benar! ${level.reason}`, true);
+    } else {
+      showFeedback(`❌ Kurang tepat. ${level.reason}`, false);
+    }
+
+    currentB2Level++;
+    setTimeout(() => {
+      if (currentB2Level < b2Levels.length) {
+        loadB2Level();
+      } else {
+        endGame();
+      }
+    }, 3000);
+  }
+
+  // --- AKHIR GAME ---
+  function endGame() {
+    hideFeedback();
+    document.getElementById('screen-babak2').classList.add('hidden');
+    document.getElementById('screen-end').classList.remove('hidden');
+    document.getElementById('final-score').innerText = score;
+
+    let msg = "";
+    if (score >= 90) {
+      msg = "🏆 LUAR BIASA! Kamu adalah Detektif Data Handal. Semua analisis datamu sangat tepat!";
+    } else if (score >= 50) {
+      msg = "👍 BAGUS! Kamu berhasil memecahkan kasus ini dengan analisis yang baik.";
+    } else {
+      msg = "💪 CUKUP BAIK! Terus berlatih agar kemampuan analisis datamu semakin tajam!";
+    }
+    document.getElementById('appreciation-msg').innerText = msg;
+  }
+</script>
+
+</body>
+</html>
