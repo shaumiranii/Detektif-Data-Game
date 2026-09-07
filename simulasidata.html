@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penyelidik Sepatu Kelas - Matematika Kelas V SD</title>
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', cursive, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f0f9ff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    #app-container {
+      width: 100%;
+      max-width: 850px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 20px;
+      border: 4px solid #38bdf8;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Header & Progress Bar */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #0284c7;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+    .progress-box {
+      background: #e0f2fe;
+      border-radius: 12px;
+      height: 20px;
+      width: 100%;
+      overflow: hidden;
+      margin: 10px 0;
+      border: 2px solid #bae6fd;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #4ade80);
+      width: 14%;
+      transition: width 0.4s ease;
+    }
+    .step-indicator {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #0369a1;
+    }
+
+    /* Screen Management & Animation */
+    .screen {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* UI Elements */
+    .btn {
+      background-color: #4ade80;
+      color: #064e3b;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #22c55e;
+      transition: all 0.1s;
+      margin: 10px 5px;
+      display: inline-block;
+    }
+    .btn:hover {
+      background-color: #86efac;
+    }
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #22c55e;
+    }
+    .btn-secondary {
+      background-color: #cbd5e1;
+      color: #334155;
+      box-shadow: 0 4px 0 #94a3b8;
+    }
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+    .btn-secondary:active {
+      box-shadow: 0 1px 0 #94a3b8;
+    }
+    .btn:disabled {
+      background-color: #e2e8f0;
+      color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .instruction {
+      background-color: #fef08a;
+      border-left: 5px solid #eab308;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      color: #713f12;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      background: white;
+    }
+    th, td {
+      border: 2px solid #cbd5e1;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #0284c7;
+      color: white;
+    }
+
+    /* Step 2 Layout */
+    .classroom-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .friends-grid {
+      flex: 1;
+      min-width: 280px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+    }
+    .friend-card {
+      background: #fff;
+      border: 3px solid #38bdf8;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .friend-card:hover {
+      transform: scale(1.05);
+      background-color: #f0f9ff;
+    }
+    .friend-card.asked {
+      border-color: #cbd5e1;
+      background-color: #f1f5f9;
+      opacity: 0.7;
+    }
+    .friend-avatar {
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+    }
+    .friend-name {
+      font-weight: bold;
+      color: #0369a1;
+      font-size: 0.9rem;
+    }
+    .speech-bubble {
+      background: #fef08a;
+      border: 2px solid #eab308;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      min-height: 50px;
+      font-size: 0.95rem;
+    }
+    .side-table {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    /* Step 4 Drag Drop */
+    .drag-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      min-height: 70px;
+    }
+    .draggable-card {
+      background: #38bdf8;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: grab;
+      box-shadow: 0 4px 0 #0284c7;
+      user-select: none;
+    }
+    .draggable-card:active {
+      cursor: grabbing;
+    }
+    .draggable-card.dragging {
+      opacity: 0.4;
+    }
+
+    /* Step 5 Questions */
+    .q-box {
+      margin-bottom: 15px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .q-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+    }
+    .option-btn {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .option-btn:hover {
+      border-color: #38bdf8;
+      background: #f0f9ff;
+    }
+    .option-btn.selected {
+      background: #38bdf8;
+      color: white;
+      border-color: #0284c7;
+    }
+
+    /* Fill in blanks */
+    select {
+      padding: 5px 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 2px solid #38bdf8;
+      background: white;
+      font-weight: bold;
+      color: #0369a1;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      border-top: 2px solid #f1f5f9;
+      padding-top: 15px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #4ade80;
+      color: #064e3b;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <header>
+    <h1>🔍 Penyelidik Sepatu Kelas</h1>
+    <div class="progress-box">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    <div id="step-indicator" class="step-indicator">Tahap 1 dari 7</div>
+  </header>
+
+  <!-- TAHAP 1: Perkenalan -->
+  <div id="step-1" class="screen active">
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 4rem; margin-bottom: 10px;">🕵️‍♂️👟</div>
+      <h2>Halo, Penyelidik Muda!</h2>
+      <p style="margin: 15px 0; line-height: 1.6;">
+        Hari ini kamu mendapat misi penting! Tugasmu adalah mengumpulkan data ukuran sepatu dari <strong>5 teman sekelasmu</strong>, mengelompokkannya, mengurutkannya, hingga menarik kesimpulan data.
+      </p>
+      <div class="instruction" style="text-align: left;">
+        <strong>Tujuan Belajar:</strong><br>
+        1. Mengumpulkan data secara langsung.<br>
+        2. Menyajikan data dengan Turus dan Tabel Frekuensi.<br>
+        3. Mengurutkan, membandingkan, dan menyimpulkan data.
+      </div>
+      <button class="btn" onclick="nextStep(2)">Mulai Misi! 🚀</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 2: Bertanya ke Teman -->
+  <div id="step-2" class="screen">
+    <div class="instruction">
+      👉 Ketuk tiap teman di kelas untuk menanyakan ukuran sepatunya!
+    </div>
+    <div class="classroom-container">
+      <div style="flex: 1;">
+        <div id="speech-bubble" class="speech-bubble">
+          Klik pada salah satu teman untuk memulai wawancara!
+        </div>
+        <div class="friends-grid" id="friends-container">
+          <!-- Karakter teman di-generate lewat JS -->
+        </div>
+      </div>
+      <div class="side-table">
+        <h3>📋 Catatan Data Mentah</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Ukuran</th>
+            </tr>
+          </thead>
+          <tbody id="raw-data-table">
+            <tr><td colspan="3" style="color: #94a3b8;">Belum ada data</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="prevStep(1)">⬅️ Kembali</button>
+      <button id="btn-to-step3" class="btn" onclick="nextStep(3)" disabled>Lanjut Tahap 3 ➡️</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 3: Mengelompokkan dengan Turus -->
+  <div id="step-3" class="screen">
+    <div class="instruction">
+      👉 Hitung data mentah di bawah, lalu tambahkan <strong>Turus (|)</strong> pada tabel sesuai jumlah munculnya setiap ukuran sepatu!
+    </div>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <h4> Data Mentah Sepatu:</h4>
+        <div id="reference-raw-data" class="card" style="font-size: 0.95rem;"></div>
+      </div>
+      <div style="flex: 2; min-width: 280px;">
+        <h3>📊 Tabel Frekuensi</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Ukuran</th>
+              <th>Turus (|)</th>
+              <th>Aksi</th>
+              <th>Frekuensi</th>
+            </tr>
+          </thead>
+          <tbody id="tally-table-body">
+            <!-- Diisi lewat JS -->
+          </tbody>
+        </table>
+        <div id="tally-feedback" style="font-weight: bold; margin-top: 10px;"></div>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="prevStep(2)">⬅️ Kembali</button>
+      <button id="btn-to-step4" class="btn" onclick="nextStep(4)" disabled>Lanjut Tahap 4 ➡️</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 4: Mengurutkan Data -->
+  <div id="step-4" class="screen">
+    <div class="instruction">
+      👉 Geser (Drag & Drop) kartu ukuran sepatu di bawah agar terurut dari <strong>terkecil ke terbesar</strong>!
+    </div>
+    <div class="card" style="text-align: center;">
+      <h3>Urutan Ukuran Sepatu (Terkecil ➡️ Terbesar)</h3>
+      <div class="drag-container" id="drag-container">
+        <!-- Card di-generate JS -->
+      </div>
+      <button class="btn" onclick="checkSorting()">Cek Urutan 🔍</button>
+      <div id="sort-feedback" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="prevStep(3)">⬅️ Kembali</button>
+      <button id="btn-to-step5" class="btn" onclick="nextStep(5)" disabled>Lanjut Tahap 5 ➡️</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 5: Membandingkan Data -->
+  <div id="step-5" class="screen">
+    <div class="instruction">
+      👉 Jawab pertanyaan perbandingan berdasarkan data yang telah kamu kumpulkan!
+    </div>
+    <div id="questions-container">
+      <!-- Pertanyaan di-generate JS -->
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="prevStep(4)">⬅️ Kembali</button>
+      <button id="btn-to-step6" class="btn" onclick="checkAnswersStep5()">Lanjut Tahap 6 ➡️</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 6: Menarik Kesimpulan -->
+  <div id="step-6" class="screen">
+    <div class="instruction">
+      👉 Lengkapi kalimat kesimpulan di bawah ini dengan memilih jawaban yang paling tepat!
+    </div>
+    <div class="card" style="line-height: 2.2; font-size: 1.1rem;">
+      <h3>📝 Laporan Hasil Penyelidikan</h3>
+      <p>
+        Dari hasil penyelidikan terhadap 5 teman kelas, ukuran sepatu terkecil yang ditemukan adalah 
+        <select id="conclusion-min"></select> dan ukuran terbesar adalah 
+        <select id="conclusion-max"></select>. 
+        Ukuran sepatu yang paling banyak dimiliki siswa adalah ukuran 
+        <select id="conclusion-mode"></select>. 
+        Secara keseluruhan, data ukuran sepatu siswa di kelas dapat diolah dengan baik menggunakan tabel frekuensi.
+      </p>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="prevStep(5)">⬅️ Kembali</button>
+      <button class="btn" onclick="checkStep6()">Selesaikan Laporan 🏁</button>
+    </div>
+  </div>
+
+  <!-- TAHAP 7: Penutup -->
+  <div id="step-7" class="screen">
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 4rem;">🏆🎉</div>
+      <h2>Misi Selesai! Luar Biasa!</h2>
+      <p style="margin: 10px 0;">Kamu telah berhasil menjadi **Penyelidik Data** yang handal!</p>
+      
+      <div style="background: #e0f2fe; padding: 15px; border-radius: 12px; margin: 15px 0;">
+        <h3 style="color: #0284c7;">Skor Akhir Kamu:</h3>
+        <div id="final-score" style="font-size: 3rem; font-weight: bold; color: #16a34a;">100</div>
+        <p id="final-badge" class="badge" style="font-size: 1rem; margin-top: 5px;">Penyelidik Bintang 5 ⭐️⭐️⭐️⭐️⭐️</p>
+      </div>
+
+      <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #cbd5e1;">
+        <strong>Proses Belajar Yang Telah Kamu Lalui:</strong>
+        <ul style="margin-left: 20px; margin-top: 5px;">
+          <td>✅ Mengumpulkan data mentah secara interaktif.</td><br>
+          <td>✅ Mengelompokkan data menggunakan turus & frekuensi.</td><br>
+          <td>✅ Mengurutkan data acak dari terkecil ke terbesar.</td><br>
+          <td>✅ Membandingkan dan menarik kesimpulan data.</td>
+        </ul>
+      </div>
+
+      <button class="btn" style="margin-top: 20px;" onclick="resetGame()">Main Lagi 🔄</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Data State
+  let currentStep = 1;
+  const friendsData = [
+    { name: "Budi", avatar: "👦🏻", size: 0, asked: false },
+    { name: "Siti", avatar: "👧🏽", size: 0, asked: false },
+    { name: "Eko", avatar: "👦🏽", size: 0, asked: false },
+    { name: "Dewi", avatar: "👧🏻", size: 0, asked: false },
+    { name: "Rian", avatar: "👦🏼", size: 0, asked: false }
+  ];
+  let tallyState = {};
+  let sortedSizes = [];
+  let step5Answers = {};
+  let totalScore = 0;
+
+  // Initialize Data
+  function initData() {
+    friendsData.forEach(f => {
+      // Random shoe size between 34 and 39
+      f.size = Math.floor(Math.random() * 6) + 34;
+      f.asked = false;
+    });
+    tallyState = {};
+    const sizes = friendsData.map(f => f.size);
+    const uniqueSizes = [...new Set(sizes)].sort((a,b) => a - b);
+    uniqueSizes.forEach(s => {
+      tallyState[s] = { count: 0, target: sizes.filter(x => x === s).length };
+    });
+    sortedSizes = [...sizes].sort((a,b) => a - b);
+  }
+
+  // Navigation Logic
+  function updateProgress() {
+    const bar = document.getElementById('progress-bar');
+    const text = document.getElementById('step-indicator');
+    const percent = (currentStep / 7) * 100;
+    bar.style.width = percent + '%';
+    text.innerText = `Tahap ${currentStep} dari 7`;
+  }
+
+  function showScreen(step) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    setTimeout(() => {
+      document.getElementById(`step-${step}`).classList.add('active');
+    }, 50);
+    currentStep = step;
+    updateProgress();
+  }
+
+  function nextStep(step) {
+    showScreen(step);
+    if(step === 3) setupStep3();
+    if(step === 4) setupStep4();
+    if(step === 5) setupStep5();
+    if(step === 6) setupStep6();
+  }
+
+  function prevStep(step) {
+    showScreen(step);
+  }
+
+  // Step 2 Logic
+  function renderStep2() {
+    const container = document.getElementById('friends-container');
+    container.innerHTML = '';
+    friendsData.forEach((f, idx) => {
+      const card = document.createElement('div');
+      card.className = `friend-card ${f.asked ? 'asked' : ''}`;
+      card.onclick = () => askFriend(idx);
+      card.innerHTML = `
+        <div class="friend-avatar">${f.avatar}</div>
+        <div class="friend-name">${f.name}</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function askFriend(idx) {
+    const f = friendsData[idx];
+    const bubble = document.getElementById('speech-bubble');
+    if(!f.asked) {
+      f.asked = true;
+      bubble.innerHTML = `<strong>Penyelidik:</strong> "Berapa ukuran sepatumu, ${f.name}?"<br><strong>${f.name}:</strong> "Ukuran sepatuku <strong>${f.size}</strong>!"`;
+      renderStep2();
+      updateRawTable();
+    } else {
+      bubble.innerHTML = `<strong>${f.name}:</strong> "Kan sudah aku beri tahu, ukuran sepatuku <strong>${f.size}</strong>!"`;
+    }
+
+    // Check if all asked
+    if(friendsData.every(item => item.asked)) {
+      document.getElementById('btn-to-step3').disabled = false;
+    }
+  }
+
+  function updateRawTable() {
+    const tbody = document.getElementById('raw-data-table');
+    tbody.innerHTML = '';
+    let count = 1;
+    friendsData.forEach(f => {
+      if(f.asked) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${count++}</td><td>${f.name}</td><td><strong>${f.size}</strong></td>`;
+        tbody.appendChild(tr);
+      }
+    });
+  }
+
+  // Step 3 Logic
+  function setupStep3() {
+    // Reference Data
+    const refBox = document.getElementById('reference-raw-data');
+    refBox.innerHTML = friendsData.map(f => `• ${f.name}: <strong>${f.size}</strong>`).join('<br>');
+
+    // Tally Table
+    const tbody = document.getElementById('tally-table-body');
+    tbody.innerHTML = '';
+    Object.keys(tallyState).sort().forEach(size => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>Ukuran ${size}</strong></td>
+        <td id="tally-display-${size}" style="font-size: 1.2rem; color: #0284c7; letter-spacing: 3px;">-</td>
+        <td>
+          <button class="btn" style="padding:4px 8px; font-size:0.9rem;" onclick="addTally(${size})">+ Turus</button>
+          <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.9rem;" onclick="resetTally(${size})">Reset</button>
+        </td>
+        <td id="freq-display-${size}">-</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function addTally(size) {
+    if(tallyState[size].count < tallyState[size].target + 2) {
+      tallyState[size].count++;
+      renderTallyRow(size);
+      checkTallyCompletion();
+    }
+  }
+
+  function resetTally(size) {
+    tallyState[size].count = 0;
+    renderTallyRow(size);
+    checkTallyCompletion();
+  }
+
+  function renderTallyRow(size) {
+    const display = document.getElementById(`tally-display-${size}`);
+    const freqDisplay = document.getElementById(`freq-display-${size}`);
+    const cnt = tallyState[size].count;
+    display.innerText = cnt > 0 ? '|'.repeat(cnt) : '-';
+    freqDisplay.innerText = '-';
+  }
+
+  function checkTallyCompletion() {
+    let allCorrect = true;
+    Object.keys(tallyState).forEach(size => {
+      if(tallyState[size].count !== tallyState[size].target) {
+        allCorrect = false;
+      }
+    });
+
+    const feedback = document.getElementById('tally-feedback');
+    const btnNext = document.getElementById('btn-to-step4');
+
+    if(allCorrect) {
+      feedback.style.color = '#16a34a';
+      feedback.innerText = '✅ Luar biasa! Turus sudah sesuai dengan data. Kolom frekuensi otomatis terisi!';
+      Object.keys(tallyState).forEach(size => {
+        document.getElementById(`freq-display-${size}`).innerText = tallyState[size].target;
+      });
+      btnNext.disabled = false;
+    } else {
+      feedback.style.color = '#dc2626';
+      feedback.innerText = '💡 Hitung kembali turusmu agar sesuai dengan data mentah.';
+      btnNext.disabled = true;
+    }
+  }
+
+  // Step 4 Logic (Drag & Drop)
+  function setupStep4() {
+    const container = document.getElementById('drag-container');
+    container.innerHTML = '';
+    
+    // Shuffle sizes for drag
+    let shuffled = [...friendsData.map(f => f.size)].sort(() => Math.random() - 0.5);
+
+    shuffled.forEach((size, idx) => {
+      const card = document.createElement('div');
+      card.className = 'draggable-card';
+      card.draggable = true;
+      card.innerText = size;
+      card.dataset.index = idx;
+
+      card.addEventListener('dragstart', handleDragStart);
+      card.addEventListener('dragover', handleDragOver);
+      card.addEventListener('drop', handleDrop);
+      card.addEventListener('dragend', handleDragEnd);
+
+      container.appendChild(card);
+    });
+  }
+
+  let dragSrcEl = null;
+
+  function handleDragStart(e) {
+    dragSrcEl = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDragOver(e) {
+    if (e.preventDefault) e.preventDefault();
+    return false;
+  }
+
+  function handleDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+    if (dragSrcEl !== this) {
+      let container = document.getElementById('drag-container');
+      let cards = Array.from(container.children);
+      let srcIdx = cards.indexOf(dragSrcEl);
+      let targetIdx = cards.indexOf(this);
+
+      if (srcIdx < targetIdx) {
+        container.insertBefore(dragSrcEl, this.nextSibling);
+      } else {
+        container.insertBefore(dragSrcEl, this);
+      }
+    }
+    return false;
+  }
+
+  function handleDragEnd() {
+    this.classList.remove('dragging');
+  }
+
+  function checkSorting() {
+    const container = document.getElementById('drag-container');
+    const currentOrder = Array.from(container.children).map(c => parseInt(c.innerText));
+    const feedback = document.getElementById('sort-feedback');
+    const btnNext = document.getElementById('btn-to-step5');
+
+    let correct = true;
+    for(let i=0; i<currentOrder.length; i++) {
+      if(currentOrder[i] !== sortedSizes[i]) {
+        correct = false;
+        break;
+      }
+    }
+
+    if(correct) {
+      feedback.style.color = '#16a34a';
+      feedback.innerText = '✅ Hebat! Urutan angka dari terkecil ke terbesar sudah benar.';
+      btnNext.disabled = false;
+    } else {
+      feedback.style.color = '#dc2626';
+      feedback.innerText = '❌ Urutan belum tepat. Coba geser lagi dari yang paling kecil ke besar!';
+      btnNext.disabled = true;
+    }
+  }
+
+  // Step 5 Logic (Comparing)
+  function setupStep5() {
+    const container = document.getElementById('questions-container');
+    container.innerHTML = '';
+
+    // Calculate Mode, Min, Max
+    const sizeCounts = {};
+    friendsData.forEach(f => sizeCounts[f.size] = (sizeCounts[f.size] || 0) + 1);
+    
+    let maxFreq = 0;
+    Object.values(sizeCounts).forEach(c => { if(c > maxFreq) maxFreq = c; });
+    const modes = Object.keys(sizeCounts).filter(s => sizeCounts[s] === maxFreq);
+    
+    let minFreq = 99;
+    Object.values(sizeCounts).forEach(c => { if(c < minFreq) minFreq = c; });
+    
+    const diff = maxFreq - minFreq;
+
+    const q1Options = [...new Set(friendsData.map(f => f.size))];
+    const pickSizeA = q1Options[0];
+    const pickSizeB = q1Options[1] || q1Options[0];
+
+    const questions = [
+      {
+        id: 'q1',
+        title: '1. Ukuran sepatu berapa yang paling banyak dimiliki siswa (paling sering muncul)?',
+        options: q1Options,
+        correct: modes[0] // Simplify to first mode
+      },
+      {
+        id: 'q2',
+        title: '2. Ukuran sepatu berapa yang paling sedikit dimiliki siswa?',
+        options: q1Options,
+        correct: Object.keys(sizeCounts).find(key => sizeCounts[key] === minFreq)
+      },
+      {
+        id: 'q3',
+        title: `3. Siswa yang memiliki sepatu ukuran ${pickSizeA} .......... dibandingkan ukuran ${pickSizeB}.`,
+        options: ['Lebih Banyak', 'Lebih Sedikit', 'Sama Banyak'],
+        correct: sizeCounts[pickSizeA] > sizeCounts[pickSizeB] ? 'Lebih Banyak' : (sizeCounts[pickSizeA] < sizeCounts[pickSizeB] ? 'Lebih Sedikit' : 'Sama Banyak')
+      },
+      {
+        id: 'q4',
+        title: '4. Berapa selisih antara jumlah pemilik sepatu paling banyak dan paling sedikit?',
+        options: [0, 1, 2, 3, 4],
+        correct: diff
+      }
+    ];
+
+    window.generatedQuestions = questions;
+
+    questions.forEach((q) => {
+      const qBox = document.createElement('div');
+      qBox.className = 'q-box';
+      qBox.innerHTML = `
+        <div class="q-title">${q.title}</div>
+        <div class="options-grid" id="opts-${q.id}">
+          ${q.options.map(opt => `
+            <div class="option-btn" onclick="selectOption('${q.id}', '${opt}', this)">${opt}</div>
+          `).join('')}
+        </div>
+      `;
+      container.appendChild(qBox);
+    });
+  }
+
+  function selectOption(qId, val, btnEl) {
+    const parent = document.getElementById(`opts-${qId}`);
+    parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
+    step5Answers[qId] = val;
+  }
+
+  function checkAnswersStep5() {
+    const questions = window.generatedQuestions;
+    if(Object.keys(step5Answers).length < 4) {
+      alert('Jawab semua pertanyaan terlebih dahulu ya!');
+      return;
+    }
+
+    let correctCount = 0;
+    questions.forEach(q => {
+      if(String(step5Answers[q.id]) === String(q.correct)) {
+        correctCount++;
+      }
+    });
+
+    totalScore += correctCount * 15; // 60 pts max from step 5
+    nextStep(6);
+  }
+
+  // Step 6 Logic
+  function setupStep6() {
+    const sizes = friendsData.map(f => f.size);
+    const uniqueSizes = [...new Set(sizes)].sort((a,b) => a - b);
+    
+    const sizeCounts = {};
+    friendsData.forEach(f => sizeCounts[f.size] = (sizeCounts[f.size] || 0) + 1);
+    let maxFreq = 0;
+    Object.values(sizeCounts).forEach(c => { if(c > maxFreq) maxFreq = c; });
+    const mode = Object.keys(sizeCounts).find(s => sizeCounts[s] === maxFreq);
+
+    const minSelect = document.getElementById('conclusion-min');
+    const maxSelect = document.getElementById('conclusion-max');
+    const modeSelect = document.getElementById('conclusion-mode');
+
+    const fillOptions = (selectEl) => {
+      selectEl.innerHTML = '<option value="">--pilih--</option>' + 
+        uniqueSizes.map(s => `<option value="${s}">${s}</option>`).join('');
+    };
+
+    fillOptions(minSelect);
+    fillOptions(maxSelect);
+    fillOptions(modeSelect);
+
+    window.step6Correct = {
+      min: sortedSizes[0],
+      max: sortedSizes[sortedSizes.length - 1],
+      mode: mode
+    };
+  }
+
+  function checkStep6() {
+    const minVal = document.getElementById('conclusion-min').value;
+    const maxVal = document.getElementById('conclusion-max').value;
+    const modeVal = document.getElementById('conclusion-mode').value;
+
+    if(!minVal || !maxVal || !modeVal) {
+      alert('Lengkapi semua titik-titik pada kesimpulan!');
+      return;
+    }
+
+    const correct = window.step6Correct;
+    let scoreStep6 = 0;
+
+    if(parseInt(minVal) === correct.min) scoreStep6 += 10;
+    if(parseInt(maxVal) === correct.max) scoreStep6 += 10;
+    if(parseInt(modeVal) === parseInt(correct.mode)) scoreStep6 += 20;
+
+    totalScore += scoreStep6;
+    showFinalScreen();
+    nextStep(7);
+  }
+
+  function showFinalScreen() {
+    const scoreEl = document.getElementById('final-score');
+    const badgeEl = document.getElementById('final-badge');
+    
+    // Cap score at 100 max
+    let finalScore = Math.min(100, Math.max(70, totalScore + 40)); 
+    scoreEl.innerText = finalScore;
+
+    if(finalScore >= 90) {
+      badgeEl.innerText = "Penyelidik Bintang 5 ⭐️⭐️⭐️⭐️⭐️";
+    } else if(finalScore >= 80) {
+      badgeEl.innerText = "Penyelidik Bintang 4 ⭐️⭐️⭐️⭐️";
+    } else {
+      badgeEl.innerText = "Penyelidik Bintang 3 ⭐️⭐️⭐️";
+    }
+  }
+
+  function resetGame() {
+    totalScore = 0;
+    step5Answers = {};
+    initData();
+    renderStep2();
+    document.getElementById('btn-to-step3').disabled = true;
+    document.getElementById('speech-bubble').innerHTML = 'Klik pada salah satu teman untuk memulai wawancara!';
+    document.getElementById('raw-data-table').innerHTML = '<tr><td colspan="3" style="color: #94a3b8;">Belum ada data</td></tr>';
+    nextStep(1);
+  }
+
+  // Start Program
+  window.onload = () => {
+    initData();
+    renderStep2();
+  };
+</script>
+</body>
+</html>
