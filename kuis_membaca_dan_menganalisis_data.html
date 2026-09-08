@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Membaca dan Menganalisis Data - Kelas V SD</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Fredoka', 'Chalkboard SE', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f4f9ff;
+            background-image: radial-gradient(#3a86ff 0.75px, transparent 0.75px), radial-gradient(#3a86ff 0.75px, #f4f9ff 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            color: #2b2d42;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 680px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            border: 4px solid #3a86ff;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .title {
+            color: #3a86ff;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        /* Progress Bar & Header Stats */
+        .quiz-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #4a4e69;
+            font-size: 15px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 12px;
+            height: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 2px solid #ced4da;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, #ff007f, #ffbe0b);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        /* Question Box */
+        .question-card {
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-text {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1d3557;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        /* Visual Data Elements (Tables & Charts) */
+        .data-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #48cae4;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .data-table th {
+            background-color: #48cae4;
+            color: white;
+            padding: 10px;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+        }
+
+        /* Vertical Bar Chart */
+        .bar-chart-v {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 160px;
+            padding-top: 20px;
+            border-bottom: 3px solid #6c757d;
+        }
+
+        .bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 20%;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar-val {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1d3557;
+        }
+
+        .bar-fill {
+            width: 100%;
+            max-width: 40px;
+            background: linear-gradient(180deg, #ffbe0b, #ff007f);
+            border-radius: 6px 6px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
+        }
+
+        /* Horizontal Bar Chart */
+        .bar-chart-h {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bar-row-label {
+            width: 80px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+            color: #495057;
+        }
+
+        .bar-row-track {
+            flex-grow: 1;
+            background-color: #e9ecef;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-row-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4d8, #0077b6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Options */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            color: #334155;
+            outline: none;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #f1f5f9;
+            border-color: #3a86ff;
+            transform: translateY(-2px);
+        }
+
+        .option-prefix {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .option-btn.selected-correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .option-btn.selected-correct .option-prefix {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: #ffe4e6;
+            border-color: #f43f5e;
+            color: #9f1239;
+        }
+        .option-btn.selected-wrong .option-prefix {
+            background-color: #f43f5e;
+            color: white;
+        }
+
+        .option-btn.highlight-correct {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+
+        /* Feedback Box */
+        .feedback-box {
+            display: none;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background-color: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+
+        .feedback-box.wrong {
+            display: block;
+            background-color: #ffe4e6;
+            border: 2px solid #f43f5e;
+            color: #9f1239;
+        }
+
+        .feedback-title {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Action Button */
+        .btn-next {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #3a86ff;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(58, 134, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-next:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-next:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .result-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff007f, #3a86ff);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .score-number {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .encouragement-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1d3557;
+            margin-bottom: 10px;
+        }
+
+        .encouragement-text {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .btn-restart {
+            background-color: #ff007f;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-restart:hover {
+            background-color: #d90429;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="title">Kuis Membaca & Menganalisis Data</div>
+        <div class="subtitle">Matematika Kelas V SD</div>
+    </div>
+
+    <!-- Quiz Content -->
+    <div id="quiz-body">
+        <div class="quiz-status">
+            <span id="question-number">Soal 1 dari 10</span>
+            <span id="score-display">Skor: 0</span>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Question Cards Container -->
+        <div id="questions-container">
+            <!-- Q1 -->
+            <div class="question-card active" data-index="0">
+                <div class="data-box">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Siswa</th>
+                                <th>Waktu Membaca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Andi</td><td>30 menit</td></tr>
+                            <tr><td>Beni</td><td>45 menit</td></tr>
+                            <tr><td>Citra</td><td>40 menit</td></tr>
+                            <tr><td>Dini</td><td>45 menit</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="question-text">Pernyataan yang menunjukkan hubungan antardata adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(0, 'a')"><span class="option-prefix">A</span>Citra membaca buku paling lama</button>
+                    <button class="option-btn" onclick="checkAnswer(0, 'b')"><span class="option-prefix">B</span>Beni dan Dini memiliki waktu membaca yang sama</button>
+                    <button class="option-btn" onclick="checkAnswer(0, 'c')"><span class="option-prefix">C</span>Selisih waktu membaca Beni dan Citra adalah 15 menit</button>
+                    <button class="option-btn" onclick="checkAnswer(0, 'd')"><span class="option-prefix">D</span>Citra membaca lebih lama 5 menit dibandingkan Dini</button>
+                </div>
+                <div class="feedback-box" id="feedback-0"></div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="question-card" data-index="1">
+                <div class="data-box">
+                    <div style="text-align: center; font-weight:700; font-size:13px; margin-bottom:10px; color:#1d3557;">Data Botol Plastik Per Kelas</div>
+                    <div class="bar-chart-v">
+                        <div class="bar-col">
+                            <span class="bar-val">24</span>
+                            <div class="bar-fill" style="height: 68%;"></div>
+                            <span class="bar-label">V-A</span>
+                        </div>
+                        <div class="bar-col">
+                            <span class="bar-val">31</span>
+                            <div class="bar-fill" style="height: 88%;"></div>
+                            <span class="bar-label">V-B</span>
+                        </div>
+                        <div class="bar-col">
+                            <span class="bar-val">27</span>
+                            <div class="bar-fill" style="height: 77%;"></div>
+                            <span class="bar-label">V-C</span>
+                        </div>
+                        <div class="bar-col">
+                            <span class="bar-val">35</span>
+                            <div class="bar-fill" style="height: 100%;"></div>
+                            <span class="bar-label">V-D</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="question-text">Hubungan yang benar antara data tersebut adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(1, 'a')"><span class="option-prefix">A</span>V-C mengumpulkan 11 botol lebih banyak daripada V-A</button>
+                    <button class="option-btn" onclick="checkAnswer(1, 'b')"><span class="option-prefix">B</span>V-A mengumpulkan 11 botol lebih banyak daripada V-D</button>
+                    <button class="option-btn" onclick="checkAnswer(1, 'c')"><span class="option-prefix">C</span>V-D mengumpulkan 11 botol lebih banyak daripada V-A</button>
+                    <button class="option-btn" onclick="checkAnswer(1, 'd')"><span class="option-prefix">D</span>V-B mengumpulkan 11 botol lebih banyak daripada V-C</button>
+                </div>
+                <div class="feedback-box" id="feedback-1"></div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="question-card" data-index="2">
+                <div class="question-text">Jumlah halaman yang dibaca Rani selama empat hari adalah 10, 14, 18, dan 22 halaman. Aturan perubahan yang ditunjukkan data tersebut adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(2, 'a')"><span class="option-prefix">A</span>Bertambah 6 halaman setiap hari</button>
+                    <button class="option-btn" onclick="checkAnswer(2, 'b')"><span class="option-prefix">B</span>Bertambah 2 halaman setiap hari</button>
+                    <button class="option-btn" onclick="checkAnswer(2, 'c')"><span class="option-prefix">C</span>Bertambah 4 halaman setiap hari</button>
+                    <button class="option-btn" onclick="checkAnswer(2, 'd')"><span class="option-prefix">D</span>Bertambah dengan selisih yang semakin besar</button>
+                </div>
+                <div class="feedback-box" id="feedback-2"></div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="question-card" data-index="3">
+                <div class="question-text">Jumlah pengunjung sebuah taman selama empat hari adalah 30, 35, 42, dan 51 orang. Jika aturan pertambahan tersebut berlanjut, jumlah pengunjung hari kelima diperkirakan...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(3, 'a')"><span class="option-prefix">A</span>60 orang</button>
+                    <button class="option-btn" onclick="checkAnswer(3, 'b')"><span class="option-prefix">B</span>64 orang</button>
+                    <button class="option-btn" onclick="checkAnswer(3, 'c')"><span class="option-prefix">C</span>62 orang</button>
+                    <button class="option-btn" onclick="checkAnswer(3, 'd')"><span class="option-prefix">D</span>66 orang</button>
+                </div>
+                <div class="feedback-box" id="feedback-3"></div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="question-card" data-index="4">
+                <div class="question-text">Jumlah pengunjung lapangan olahraga selama lima hari adalah 50, 55, 53, 60, dan 64 orang. Pernyataan paling tepat tentang kecenderungan data adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(4, 'a')"><span class="option-prefix">A</span>Relatif tetap karena semua data berbeda</button>
+                    <button class="option-btn" onclick="checkAnswer(4, 'b')"><span class="option-prefix">B</span>Cenderung meningkat meskipun sempat menurun</button>
+                    <button class="option-btn" onclick="checkAnswer(4, 'c')"><span class="option-prefix">C</span>Cenderung menurun karena ada satu penurunan</button>
+                    <button class="option-btn" onclick="checkAnswer(4, 'd')"><span class="option-prefix">D</span>Tidak dapat dianalisis karena angkanya tidak sama</button>
+                </div>
+                <div class="feedback-box" id="feedback-4"></div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="question-card" data-index="5">
+                <div class="question-text">Jumlah air yang digunakan sebuah taman untuk menyiram tanaman selama empat hari adalah 80 liter, 75 liter, 72 liter, dan 68 liter. Jika kecenderungan berlanjut, prediksi paling masuk akal untuk hari berikutnya adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(5, 'a')"><span class="option-prefix">A</span>Jumlah penggunaan air kemungkinan kurang dari 68 liter</button>
+                    <button class="option-btn" onclick="checkAnswer(5, 'b')"><span class="option-prefix">B</span>Jumlah penggunaan air pasti kembali menjadi 80 liter</button>
+                    <button class="option-btn" onclick="checkAnswer(5, 'c')"><span class="option-prefix">C</span>Jumlah penggunaan air kemungkinan lebih dari 80 liter</button>
+                    <button class="option-btn" onclick="checkAnswer(5, 'd')"><span class="option-prefix">D</span>Jumlah penggunaan air pasti tetap 68 liter</button>
+                </div>
+                <div class="feedback-box" id="feedback-5"></div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="question-card" data-index="6">
+                <div class="question-text">Jumlah pengunjung perpustakaan selama empat minggu adalah 40, 45, 50, dan 55 orang. Jika diprediksi 60 orang pada minggu kelima, mengapa angka 60 disebut prediksi bukan kepastian...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(6, 'a')"><span class="option-prefix">A</span>Karena kondisi pada minggu kelima dapat berbeda dari minggu sebelumnya</button>
+                    <button class="option-btn" onclick="checkAnswer(6, 'b')"><span class="option-prefix">B</span>Karena data sebelumnya tidak memiliki pola</button>
+                    <button class="option-btn" onclick="checkAnswer(6, 'c')"><span class="option-prefix">C</span>Karena jumlah pengunjung selalu berubah secara acak</button>
+                    <button class="option-btn" onclick="checkAnswer(6, 'd')"><span class="option-prefix">D</span>Karena prediksi tidak boleh menggunakan data</button>
+                </div>
+                <div class="feedback-box" id="feedback-6"></div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="question-card" data-index="7">
+                <div class="question-text">Data penjualan es buah selama empat hari adalah Senin 20 gelas, Selasa 25 gelas, Rabu 23 gelas, Kamis 30 gelas. Kesimpulan paling sesuai dengan data adalah...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(7, 'a')"><span class="option-prefix">A</span>Semua siswa menyukai es buah</button>
+                    <button class="option-btn" onclick="checkAnswer(7, 'b')"><span class="option-prefix">B</span>Penjualan akan pasti mencapai 35 gelas pada hari Jumat</button>
+                    <button class="option-btn" onclick="checkAnswer(7, 'c')"><span class="option-prefix">C</span>Penjualan selalu meningkat setiap hari</button>
+                    <button class="option-btn" onclick="checkAnswer(7, 'd')"><span class="option-prefix">D</span>Penjualan es buah cenderung meningkat meskipun sempat turun</button>
+                </div>
+                <div class="feedback-box" id="feedback-7"></div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="question-card" data-index="8">
+                <div class="question-text">Jumlah siswa yang mengikuti kegiatan membaca selama empat minggu adalah 32, 35, 39, dan 44 siswa. Pernyataan mana yang merupakan kesimpulan yang didukung data...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(8, 'a')"><span class="option-prefix">A</span>Jumlah peserta cenderung meningkat dari minggu ke minggu</button>
+                    <button class="option-btn" onclick="checkAnswer(8, 'b')"><span class="option-prefix">B</span>Jumlah peserta minggu depan pasti lebih dari 44 siswa</button>
+                    <button class="option-btn" onclick="checkAnswer(8, 'c')"><span class="option-prefix">C</span>Kegiatan membaca pasti semakin disukai semua siswa</button>
+                    <button class="option-btn" onclick="checkAnswer(8, 'd')"><span class="option-prefix">D</span>Semua siswa sekolah mengikuti kegiatan membaca</button>
+                </div>
+                <div class="feedback-box" id="feedback-8"></div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="question-card" data-index="9">
+                <div class="data-box">
+                    <div style="text-align: center; font-weight:700; font-size:13px; margin-bottom:12px; color:#1d3557;">Data Sampah Plastik (kg)</div>
+                    <div class="bar-chart-h">
+                        <div class="bar-row">
+                            <span class="bar-row-label">Minggu 1</span>
+                            <div class="bar-row-track">
+                                <div class="bar-row-fill" style="width: 100%;">50 kg</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-row-label">Minggu 2</span>
+                            <div class="bar-row-track">
+                                <div class="bar-row-fill" style="width: 90%;">45 kg</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-row-label">Minggu 3</span>
+                            <div class="bar-row-track">
+                                <div class="bar-row-fill" style="width: 86%;">43 kg</div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-row-label">Minggu 4</span>
+                            <div class="bar-row-track">
+                                <div class="bar-row-fill" style="width: 80%;">40 kg</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="question-text">Pernyataan manakah yang merupakan analisis paling lengkap...</div>
+                <div class="options-container">
+                    <button class="option-btn" onclick="checkAnswer(9, 'a')"><span class="option-prefix">A</span>Sampah plastik selalu berkurang dengan jumlah yang sama setiap minggu</button>
+                    <button class="option-btn" onclick="checkAnswer(9, 'b')"><span class="option-prefix">B</span>Sampah plastik berkurang karena siswa semakin rajin menjaga kebersihan</button>
+                    <button class="option-btn" onclick="checkAnswer(9, 'c')"><span class="option-prefix">C</span>Sampah plastik cenderung berkurang sehingga jika kecenderungan berlanjut jumlah berikutnya mungkin lebih rendah</button>
+                    <button class="option-btn" onclick="checkAnswer(9, 'd')"><span class="option-prefix">D</span>Sampah plastik pasti menjadi 35 kg pada minggu berikutnya</button>
+                </div>
+                <div class="feedback-box" id="feedback-9"></div>
+            </div>
+        </div>
+
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Lanjut ke Soal Berikutnya</button>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" id="result-screen">
+        <div class="score-circle">
+            <span class="score-number" id="final-score">0</span>
+            <span class="score-label">Skor Total</span>
+        </div>
+        <div class="encouragement-title" id="encouragement-title">Hebat!</div>
+        <div class="encouragement-text" id="encouragement-text">Kamu telah menyelesaikan kuis ini.</div>
+        <button class="btn-restart" onclick="restartQuiz()">Coba Lagi</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            correct: 'b',
+            explanation: "Beni (45 menit) dan Dini (45 menit) memiliki waktu membaca yang sama. Pilihan lain tidak sesuai dengan data tabel."
+        },
+        {
+            correct: 'c',
+            explanation: "V-D (35 botol) dikurangi V-A (24 botol) adalah 11 botol (35 - 24 = 11). Jadi V-D mengumpulkan 11 botol lebih banyak dari V-A."
+        },
+        {
+            correct: 'c',
+            explanation: "Perubahan data: 10 (+4) -> 14 (+4) -> 18 (+4) -> 22. Pola bertambah konsisten 4 halaman setiap hari."
+        },
+        {
+            correct: 'c',
+            explanation: "Pola pertambahan: +5 (30->35), +7 (35->42), +9 (42->51). Pertambahan berikutnya bertambah 2 lagi (+11), sehingga 51 + 11 = 62 orang."
+        },
+        {
+            correct: 'b',
+            explanation: "Meskipun sempat turun dari 55 ke 53, arah keseluruhan data dari hari ke-1 (50) hingga hari ke-5 (64) menunjukkan peningkatan."
+        },
+        {
+            correct: 'a',
+            explanation: "Data terus menurun (80 -> 75 -> 72 -> 68). Jika kecenderungan ini terus berlanjut, jumlah berikutnya diperkirakan kurang dari 68 liter."
+        },
+        {
+            correct: 'a',
+            explanation: "Prediksi didasarkan pada pola data masa lalu, namun kejadian nyata di masa depan dapat dipengaruhi oleh kondisi/faktor lain yang berbeda."
+        },
+        {
+            correct: 'd',
+            explanation: "Data penjualan (20, 25, 23, 30) menunjukkan tren umum meningkat walaupun sempat ada penurunan pada hari Rabu."
+        },
+        {
+            correct: 'a',
+            explanation: "Data (32, 35, 39, 44) menunjukkan peningkatan peserta secara terus-menerus dari minggu ke minggu, sehingga kesimpulan ini didukung oleh data."
+        },
+        {
+            correct: 'c',
+            explanation: "Pernyataan ini mencakup analisis kecenderungan (berkurang) dan prediksi yang rasional (mungkin lebih rendah) tanpa membuat klaim pasti yang berlebihan."
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answeredQuestions = new Array(10).fill(false);
+
+    function updateProgress() {
+        document.getElementById('question-number').innerText = `Soal ${currentQuestion + 1} dari 10`;
+        document.getElementById('score-display').innerText = `Skor: ${score}`;
+        const progressPercent = ((currentQuestion + 1) / 10) * 100;
+        document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+    }
+
+    function checkAnswer(qIndex, selectedOption) {
+        if (answeredQuestions[qIndex]) return;
+        answeredQuestions[qIndex] = true;
+
+        const currentCard = document.querySelectorAll('.question-card')[qIndex];
+        const buttons = currentCard.querySelectorAll('.option-btn');
+        const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+        const correctOption = quizData[qIndex].correct;
+
+        buttons.forEach(btn => btn.disabled = true);
+
+        const optionMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+        const selectedBtn = buttons[optionMap[selectedOption]];
+        const correctBtn = buttons[optionMap[correctOption]];
+
+        if (selectedOption === correctOption) {
+            score += 10;
+            selectedBtn.classList.add('selected-correct');
+            feedbackEl.className = "feedback-box correct";
+            feedbackEl.innerHTML = `<div class="feedback-title"><span>BENAR!</span></div>${quizData[qIndex].explanation}`;
+        } else {
+            selectedBtn.classList.add('selected-wrong');
+            correctBtn.classList.add('highlight-correct');
+            feedbackEl.className = "feedback-box wrong";
+            feedbackEl.innerHTML = `<div class="feedback-title"><span>SALAH!</span></div>Jawaban benar adalah pilihan <strong>${correctOption.toUpperCase()}</strong>.<br>${quizData[qIndex].explanation}`;
+        }
+
+        document.getElementById('score-display').innerText = `Skor: ${score}`;
+        
+        const nextBtn = document.getElementById('btn-next');
+        nextBtn.disabled = false;
+        if (currentQuestion === 9) {
+            nextBtn.innerText = "Lihat Hasil Akhir";
+        }
+    }
+
+    function nextQuestion() {
+        const cards = document.querySelectorAll('.question-card');
+        
+        if (currentQuestion < 9) {
+            cards[currentQuestion].classList.remove('active');
+            currentQuestion++;
+            cards[currentQuestion].classList.add('active');
+            updateProgress();
+            document.getElementById('btn-next').disabled = true;
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-body').style.display = 'none';
+        const resultScreen = document.getElementById('result-screen');
+        resultScreen.classList.add('active');
+
+        document.getElementById('final-score').innerText = score;
+
+        const titleEl = document.getElementById('encouragement-title');
+        const textEl = document.getElementById('encouragement-text');
+
+        if (score === 100) {
+            titleEl.innerText = "Luar Biasa! Sempurna! 🎉";
+            textEl.innerText = "Kamu menjawab semua pertanyaan dengan benar! Kamu adalah ahli dalam membaca dan menganalisis data!";
+        } else if (score >= 70) {
+            titleEl.innerText = "Sangat Bagus! 👍";
+            textEl.innerText = "Kamu sudah memahami materi membaca dan menganalisis data dengan baik. Pertahankan prestasimu!";
+        } else if (score >= 50) {
+            titleEl.innerText = "Cukup Bagus! 💪";
+            textEl.innerText = "Kamu berhasil menyelesaikan kuis, tetapi masih ada beberapa poin yang perlu dipelajari lagi. Semangat belajar!";
+        } else {
+            titleEl.innerText = "Jangan Patah Semangat! 🌱";
+            textEl.innerText = "Tetap semangat ya! Coba baca kembali materinya dan ulangi kuis ini untuk meningkatkan pemahamanmu.";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        answeredQuestions = new Array(10).fill(false);
+
+        // Reset elements
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('quiz-body').style.display = 'block';
+        document.getElementById('btn-next').innerText = "Lanjut ke Soal Berikutnya";
+        document.getElementById('btn-next').disabled = true;
+
+        const cards = document.querySelectorAll('.question-card');
+        cards.forEach((card, index) => {
+            card.classList.remove('active');
+            if (index === 0) card.classList.add('active');
+
+            const buttons = card.querySelectorAll('.option-btn');
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('selected-correct', 'selected-wrong', 'highlight-correct');
+            });
+
+            const feedback = card.querySelector('.feedback-box');
+            feedback.className = "feedback-box";
+            feedback.innerHTML = "";
+        });
+
+        updateProgress();
+    }
+
+    // Initialize initial progress
+    updateProgress();
+</script>
+
+</body>
+</html>
