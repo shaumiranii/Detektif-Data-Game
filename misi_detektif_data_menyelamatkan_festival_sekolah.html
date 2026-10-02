@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi Detektif Data: Menyelamatkan Festival Sekolah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef9c3 50%, #dcfce7 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+        .font-game { font-family: 'Fredoka', cursive; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+        .btn-bounce {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(2px) scale(0.98);
+        }
+        .tally-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 48px;
+            position: relative;
+            margin: 0 2px;
+            font-weight: bold;
+        }
+        .tally-line {
+            width: 5px;
+            height: 36px;
+            background-color: #1e293b;
+            border-radius: 3px;
+            margin: 0 2px;
+        }
+        .tally-slash {
+            position: absolute;
+            width: 5px;
+            height: 44px;
+            background-color: #dc2626;
+            border-radius: 3px;
+            transform: rotate(-65deg);
+        }
+        .drop-zone-active {
+            border-color: #0284c7 !important;
+            background-color: #e0f2fe !important;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="text-slate-800 p-2 sm:p-4 md:p-6 flex flex-col items-center justify-center min-h-screen">
+
+    <!-- Header Navigation Bar -->
+    <header id="mainHeader" class="w-full max-w-5xl glass-panel rounded-2xl p-4 mb-4 flex justify-between items-center hidden transition-all duration-300">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-amber-400 border-2 border-amber-600 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                🕵️‍♂️
+            </div>
+            <div>
+                <h1 class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Detektif Data</h1>
+                <p id="playerDisplayName" class="text-lg font-bold text-slate-800 font-game">Pemain</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Total Bintang -->
+            <div class="bg-amber-100 border-2 border-amber-400 px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm">
+                <span class="text-2xl animate-bounce">⭐</span>
+                <span id="totalStars" class="text-2xl font-black text-amber-700 font-game">0</span>
+            </div>
+            <!-- Navigation Action Buttons -->
+            <button id="btnHintHeader" onclick="openMaterialModal()" class="hidden bg-sky-500 hover:bg-sky-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-bold flex items-center gap-2 btn-bounce shadow-md">
+                <span class="text-xl">🔍</span>
+                <span class="hidden sm:inline font-game">Rangkuman Bu Rani</span>
+            </button>
+            <button id="btnBackToMap" onclick="showScreen('mapScreen')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white p-2.5 sm:px-4 sm:py-2.5 rounded-xl font-bold flex items-center gap-2 btn-bounce shadow-md">
+                <span class="text-xl">🗺️</span>
+                <span class="hidden sm:inline font-game">Peta Sekolah</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-5xl">
+
+        <!-- 1. START SCREEN -->
+        <section id="startScreen" class="glass-panel rounded-3xl p-6 md:p-10 text-center max-w-2xl mx-auto my-auto transition-all">
+            <div class="text-6xl md:text-7xl mb-4">🏫 🕵️‍♀️ 📊</div>
+            <h1 class="text-3xl md:text-4xl font-extrabold font-game text-sky-700 mb-2">Misi Detektif Data</h1>
+            <p class="text-lg text-emerald-700 font-bold mb-4">Menyelamatkan Festival Sekolah</p>
+            
+            <!-- Welcome Modal Box Bu Rani -->
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-6 flex items-start gap-4 text-left shadow-sm">
+                <div class="text-4xl flex-shrink-0 bg-amber-200 p-2 rounded-xl">👩‍🏫</div>
+                <div>
+                    <h3 class="font-bold text-amber-900 font-game">Halo Calon Detektif Data!</h3>
+                    <p class="text-xs sm:text-sm text-slate-700 mt-1">
+                        Halo! Saya <b>Bu Rani</b>. Seminggu lagi Festival Sekolah akan dimulai, tapi catatan panitia masih berantakan.
+                        Bantu Ibu menyelesaikan 9 pos misi data agar festival berjalan sukses ya!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <div class="bg-white/80 p-4 rounded-2xl border border-slate-200 mb-6 text-left">
+                <label for="playerNameInput" class="block text-sm font-bold text-slate-700 mb-2">Tulis Namamu di Sini:</label>
+                <input type="text" id="playerNameInput" placeholder="Contoh: Budi Detektif" class="w-full px-4 py-3 rounded-xl border-2 border-sky-300 focus:border-sky-500 focus:outline-none text-lg font-semibold text-slate-800">
+            </div>
+
+            <button onclick="startGame()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-xl py-4 rounded-2xl shadow-lg border-b-4 border-amber-600 btn-bounce flex items-center justify-center gap-3 font-game">
+                <span>🚀</span> MULAI MISI DETEKTIF
+            </button>
+        </section>
+
+        <!-- 2. MAP SCREEN -->
+        <section id="mapScreen" class="hidden transition-all">
+            <div class="glass-panel rounded-3xl p-6 mb-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl md:text-3xl font-extrabold font-game text-slate-800">Peta Denah Festival Sekolah</h2>
+                    <p class="text-sm text-slate-600">Selesaikan setiap pos secara berurutan untuk mengumpulkan bintang!</p>
+                </div>
+
+                <!-- 9 Posts Grid Layout -->
+                <div id="postsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Javascript Post Buttons Will Render Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. POST SCREEN (SIMULATION & QUIZ) -->
+        <section id="postScreen" class="hidden transition-all">
+            <!-- Stage Header -->
+            <div class="glass-panel rounded-2xl p-4 mb-4 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <span id="postBadge" class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">POS 1</span>
+                    <h2 id="postTitle" class="text-xl sm:text-2xl font-bold font-game text-slate-800 mt-1">Nama Pos</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btnTabSim" onclick="switchPostTab('sim')" class="px-4 py-2 rounded-xl font-bold text-sm bg-sky-600 text-white shadow">
+                        1. Simulasi Interaktif
+                    </button>
+                    <button id="btnTabQuiz" onclick="switchPostTab('quiz')" class="px-4 py-2 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 hover:bg-slate-300">
+                        2. Tantangan Soal
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIMULATION CONTAINER -->
+            <div id="simulationContainer" class="glass-panel rounded-3xl p-4 sm:p-6 mb-6">
+                <!-- Simulation Content Loaded Dynamically -->
+            </div>
+
+            <!-- QUIZ CONTAINER -->
+            <div id="quizContainer" class="hidden glass-panel rounded-3xl p-4 sm:p-6 mb-6">
+                <!-- Quiz Banner Header -->
+                <div class="flex justify-between items-center border-b pb-3 mb-4">
+                    <div class="font-game text-lg font-bold text-slate-700">
+                        Soal <span id="currentQuestionNum">1</span> dari <span id="totalQuestionsNum">5</span>
+                    </div>
+                    <div class="text-sm font-semibold bg-amber-100 text-amber-800 px-3 py-1 rounded-lg">
+                        🎯 Indikator: <span id="questionIndicatorCode">Indikator 1</span>
+                    </div>
+                </div>
+
+                <!-- Bu Rani Dialogue Banner -->
+                <div id="buRaniQuizBox" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 sm:p-4 mb-4 flex items-start gap-3">
+                    <div class="text-3xl flex-shrink-0">👩‍🏫</div>
+                    <div>
+                        <div class="text-xs font-bold text-sky-800 uppercase tracking-wide">Bu Rani</div>
+                        <p id="buRaniQuizMessage" class="text-sm text-slate-700 mt-0.5">Bacalah pertanyaan dengan teliti ya!</p>
+                    </div>
+                </div>
+
+                <!-- Question Box Dynamic Render -->
+                <div id="questionBox" class="mb-6">
+                    <!-- Dynamic Question UI -->
+                </div>
+
+                <!-- Quiz Submit / Action Button -->
+                <div class="flex justify-end gap-3 border-t pt-4">
+                    <button id="btnCheckAnswer" onclick="checkCurrentAnswer()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-6 py-3 rounded-xl font-game btn-bounce shadow-md">
+                        Jawab Soal ✨
+                    </button>
+                    <button id="btnNextQuestion" onclick="nextQuestion()" class="hidden bg-sky-500 hover:bg-sky-600 text-white font-black px-6 py-3 rounded-xl font-game btn-bounce shadow-md">
+                        Lanjut Soal Berikutnya ➡️
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. FINAL REPORT SCREEN -->
+        <section id="reportScreen" class="hidden glass-panel rounded-3xl p-6 sm:p-8 transition-all">
+            <div class="text-center mb-6">
+                <div class="text-6xl mb-2">🏆</div>
+                <h2 class="text-3xl font-black font-game text-slate-800">Laporan Hasil Detektif Data</h2>
+                <p class="text-slate-600 font-medium">Selamat! Kamu telah menyelesaikan seluruh rangkaian misi festival!</p>
+            </div>
+
+            <!-- Profile Summary Box -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl text-center">
+                    <div class="text-xs text-amber-800 font-bold uppercase">Nama Detektif</div>
+                    <div id="reportPlayerName" class="text-2xl font-black text-amber-900 font-game mt-1">-</div>
+                </div>
+                <div class="bg-emerald-50 border-2 border-emerald-300 p-4 rounded-2xl text-center">
+                    <div class="text-xs text-emerald-800 font-bold uppercase">Total Bintang Perolehan</div>
+                    <div id="reportTotalStars" class="text-2xl font-black text-emerald-900 font-game mt-1">0 / 45 ⭐</div>
+                </div>
+                <div class="bg-sky-50 border-2 border-sky-300 p-4 rounded-2xl text-center">
+                    <div class="text-xs text-sky-800 font-bold uppercase">Gelar Lencana</div>
+                    <div id="reportBadge" class="text-2xl font-black text-sky-900 font-game mt-1">Detektif Pemula</div>
+                </div>
+            </div>
+
+            <!-- Indicator Assessment Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-6">
+                <div class="bg-slate-100 p-3 font-bold text-slate-700 font-game text-center border-b">
+                    📋 Capaian 14 Indikator Pembelajaran
+                </div>
+                <div class="max-h-80 overflow-y-auto p-2 sm:p-4">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="border-b text-slate-500">
+                                <th class="p-2">Indikator</th>
+                                <th class="p-2">Deskripsi Indikator</th>
+                                <th class="p-2 text-center">Status Capaian</th>
+                            </tr>
+                        </thead>
+                        <tbody id="indicatorTableBody">
+                            <!-- Populated Dynamically JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="showScreen('mapScreen')" class="bg-sky-500 hover:bg-sky-600 text-white font-bold px-6 py-3 rounded-xl font-game btn-bounce shadow">
+                    🔄 Ulangi Pos Pilihan
+                </button>
+                <button onclick="restartFullGame()" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-6 py-3 rounded-xl font-game btn-bounce shadow">
+                    🎮 Main Lagi Dari Awal
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BU RANI MATERIAL SUMMARY MODAL (KACA PEMBESAR) -->
+    <div id="materialModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="glass-panel max-w-xl w-full rounded-3xl p-6 relative max-h-[85vh] flex flex-col">
+            <button onclick="closeMaterialModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl font-bold">✖</button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="text-3xl">🔍</div>
+                <div>
+                    <h3 class="text-xl font-bold font-game text-sky-800" id="materialModalTitle">Catatan Detektif Bu Rani</h3>
+                    <p class="text-xs text-slate-500">Rangkuman Materi & Petunjuk Penting</p>
+                </div>
+            </div>
+            <div id="materialModalContent" class="overflow-y-auto text-sm text-slate-700 space-y-3 p-2 bg-white/60 rounded-xl border border-slate-200">
+                <!-- Content injected dynamically -->
+            </div>
+            <button onclick="closeMaterialModal()" class="mt-4 w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2.5 rounded-xl font-game btn-bounce">
+                Siap, Saya Paham!
+            </button>
+        </div>
+    </div>
+
+    <!-- GENERAL JAVASCRIPT GAME ENGINE -->
+    <script>
+        
+        // 14 INDIKATOR PENILAIAN
+        const INDICATORS = {
+            1: "Siswa dapat mengidentifikasi data berdasarkan hasil pengamatan atau informasi yang diberikan.",
+            2: "Siswa dapat mengelompokkan data berdasarkan kategori yang sesuai.",
+            3: "Siswa dapat mencatat data menggunakan turus dengan benar.",
+            4: "Siswa dapat menentukan frekuensi suatu data berdasarkan turus atau tabel.",
+            5: "Siswa dapat membaca dan memperoleh informasi dari tabel data.",
+            6: "Siswa dapat membaca dan memperoleh informasi dari piktogram.",
+            7: "Siswa dapat menentukan jumlah data berdasarkan piktogram dengan memperhatikan nilai setiap simbol.",
+            8: "Siswa dapat membandingkan banyaknya data dari dua atau lebih kategori.",
+            9: "Siswa dapat menyajikan data dalam bentuk tabel.",
+            10: "Siswa dapat menyajikan data dalam bentuk piktogram dengan menggunakan simbol yang sesuai.",
+            11: "Siswa dapat membaca dan memperoleh informasi dari diagram batang.",
+            12: "Siswa dapat menentukan kemungkinan terjadinya suatu kejadian berdasarkan situasi yang diberikan.",
+            13: "Siswa dapat membedakan kejadian yang pasti, mungkin, dan tidak mungkin terjadi.",
+            14: "Siswa dapat menggunakan data untuk menjelaskan atau menarik kesimpulan sederhana."
+        };
+
+        // POS DEFINITIONS
+        const POSTS = [
+            { id: 1, title: "Gerbang Pengamatan", icon: "🏫", indicators: [1] },
+            { id: 2, title: "Lemari Pengelompokan", icon: "🗄️", indicators: [2] },
+            { id: 3, title: "Papan Turus", icon: "🥢", indicators: [3] },
+            { id: 4, title: "Hitung Cepat", icon: "⚡", indicators: [4] },
+            { id: 5, title: "Meja Tabel", icon: "📊", indicators: [5, 9] },
+            { id: 6, title: "Galeri Piktogram", icon: "🖼️", indicators: [6, 7, 10] },
+            { id: 7, title: "Menara Batang", icon: "🏙️", indicators: [11, 8] },
+            { id: 8, title: "Kotak Undian Ajaib", icon: "🎲", indicators: [12, 13] },
+            { id: 9, title: "Rapat Panitia", icon: "👥", indicators: [14, 8] }
+        ];
+
+        // GAME STATE
+        let gameState = {
+            playerName: "",
+            currentPostId: 1,
+            unlockedPostId: 1,
+            stars: {}, // { postId: number }
+            indicatorScores: {}, // { indId: { correct: 0, total: 0 } }
+            activeQuizSession: {
+                questions: [],
+                currentIndex: 0,
+                attemptCount: 0,
+                earnedStarsPost: 0
+            }
+        };
+
+        // Initialize Indicator Stats
+        for (let i = 1; i <= 14; i++) {
+            gameState.indicatorScores[i] = { correct: 0, total: 0 };
+        }
+
+        const QUESTION_BANK = {
+            1: [
+                { ind: 1, type: "mc", q: "Manakah di bawah ini yang merupakan contoh DATA dari kegiatan di kantin?", opts: ["Es teh itu rasanya manis sekali", "Sebanyak 12 siswa membeli es teh pada jam istirahat", "Kantin sekolah sangat bersih", "Semua siswa suka jajanan murah"], ans: 1, hint: "Data adalah fakta berupa angka atau keterangan pasti dari hasil pengamatan." },
+                { ind: 1, type: "mc", q: "Budi mengamati parkiran sekolah dan mencatat: 'Ada 15 sepeda ontel dan 5 sepeda motor'. Pernyataan ini disebut...", opts: ["Data pengamatan", "Pendapat pribadi", "Ramalan cuaca", "Cerita rekaan"], ans: 0, hint: "Catatan hasil menghitung benda langsung di lapangan adalah data." },
+                { ind: 1, type: "mc", q: "Data apa yang TIDAK BISA didapatkan hanya dengan mengamati foto kelas?", opts: ["Banyaknya siswa yang memakai kacamata", "Jumlah meja di dalam kelas", "Warna sepatu yang dipakai siswa", "Makanan kesukaan setiap siswa"], ans: 3, hint: "Makanan kesukaan tidak bisa terlihat langsung hanya dari foto tanpa bertanya." },
+                { ind: 1, type: "num", q: "Di halaman ada 4 kucing oranye, 3 kucing hitam, dan 2 kucing putih. Berapa total siswa (objek) data kucing yang diamati?", ans: 9, hint: "Jumlahkan semua kucing: 4 + 3 + 2." },
+                { ind: 1, type: "tf", q: "Pernyataan: 'Siswa kelas V sangat rajin' adalah contoh data angka yang pasti.", ans: false, hint: "Kata 'rajin' adalah penilaian/pendapat, bukan data angka terukur." },
+                { ind: 1, type: "mc", q: "Saat kerja bakti, Siti mencatat: 5 orang menyapu, 4 orang membuang sampah. Kegiatan Siti disebut...", opts: ["Mengumpulkan data", "Melukis gambar", "Bermain musik", "Berolahraga"], ans: 0, hint: "Mencatat jumlah orang berdasarkan kegiatan adalah mengumpulkan data." },
+                { ind: 1, type: "num", q: "Dalam kantin terdapat 7 mangkuk bakso dan 5 piring siomay di meja. Berapa jumlah seluruh jajanan yang tercatat?", ans: 12, hint: "Hitung total 7 + 5." },
+                { ind: 1, type: "tf", q: "Data membantu kita mengetahui fakta yang sebenarnya tanpa menebak-nebak.", ans: true, hint: "Data dibuat berdasarkan fakta pengamatan nyata." }
+            ],
+            2: [
+                { ind: 2, type: "mc", q: "Manakah kelompok benda yang tepat jika kategorinya adalah 'Alat Tulis'?", opts: ["Pensil, Buku, Penggaris", "Pisang, Apel, Jeruk", "Bola, Raket, Shuttlekock", "Es Teh, Susu, Jus"], ans: 0, hint: "Pilihlah benda yang digunakan untuk belajar dan menulis." },
+                { ind: 2, type: "mc", q: "Manakah benda yang TIDAK SESUAI dalam kelompok 'Minuman Segar'?", opts: ["Jus Alpukat", "Es Jeruk", "Buku Tulis", "Air Mineral"], ans: 2, hint: "Cari benda yang bukan minuman." },
+                { ind: 2, type: "mc", q: "Siti mengelompokkan data hobi siswa: Menggambar, Menulis, dan Membaca. Kelompok hobi ini tepat dinamakan...", opts: ["Hobi Olahraga", "Hobi Literasi & Seni", "Hobi Memasak", "Hobi Otomotif"], ans: 1, hint: "Menggambar, membaca, dan menulis berhubungan dengan seni dan literasi." },
+                { ind: 2, type: "tf", q: "Penghapus dan Tipe-x dapat dimasukkan ke dalam kelompok 'Alat Kebersihan Rumah'.", ans: false, hint: "Penghapus adalah alat tulis/sekolah, bukan alat kebersihan rumah." },
+                { ind: 2, type: "mc", q: "Jika kamu ingin mengelompokkan siswa berdasarkan 'Warna Kesukaan', wadah kategori yang tepat adalah...", opts: ["Merah, Biru, Hijau", "Sepak Bola, Renang", "Nasi Goreng, Mie", "Senin, Selasa"], ans: 0, hint: "Warna kesukaan terdiri dari nama-nama warna." },
+                { ind: 2, type: "num", q: "Ada 5 apel, 3 pensil, 4 jeruk, dan 2 penggaris. Berapa total jumlah benda yang masuk kategori 'Buah-buahan'?", ans: 9, hint: "Jumlahkan apel (5) dan jeruk (4)." },
+                { ind: 2, type: "tf", q: "Buku gambar dan pensil warna berada dalam kategori kelompok yang sejenis.", ans: true, hint: "Keduanya sama-sama alat perlengkapan menggambar/sekolah." },
+                { ind: 2, type: "mc", q: "Manakah yang merupakan kategori pengelompokan yang baik untuk data siswa?", opts: ["Ukuran Sepatu", "Nama Kucing", "Merk HP Gurunya", "Harga Mobil"], ans: 0, hint: "Ukuran sepatu adalah data langsung yang dimiliki siswa." }
+            ],
+            3: [
+                { ind: 3, type: "mc", q: "Satu kelompok turus lengkap yang terdiri dari 4 garis tegak dan 1 garis miring menyilang bernilai...", opts: ["4", "5", "6", "10"], ans: 1, hint: "Turus diikat setiap kelipatan 5." },
+                { ind: 3, type: "num", q: "Jika terdapat 3 ikat turus penuh (isi 5) dan 2 garis tunggal, berapakah nilai nilainya?", ans: 17, hint: "Hitung (3 x 5) + 2." },
+                { ind: 3, type: "mc", q: "Bagaimana cara penulisan garis ke-5 pada papan turus?", opts: ["Digambar tegak sejajar", "Digambar miring menyilang 4 garis sebelumnya", "Digambar melingkar", "Digambar berupa titik"], ans: 1, hint: "Garis ke-5 berfungsi mengikat 4 garis tegak sebelumnya." },
+                { ind: 3, type: "tf", q: "Penulisan turus untuk angka 4 adalah 4 garis tegak tanpa garis silang.", ans: true, hint: "Garis silang hanya ditambahkan pada garis ke-5." },
+                { ind: 3, type: "num", q: "Berapa garis miring menyilang yang ada pada turus untuk angka 15?", ans: 3, hint: "15 dibagi 5 = 3 kelompok turus." },
+                { ind: 3, type: "mc", q: "Turus dituliskan sebagai: 卌 卌 𝄀𝄀𝄀. Bilangan yang sesuai adalah...", opts: ["10", "12", "13", "15"], ans: 2, hint: "5 + 5 + 3 = 13." },
+                { ind: 3, type: "tf", q: "Turus memudahkan kita menghitung data agar tidak ada yang terlewat.", ans: true, hint: "Fungsi turus adalah mencatat data satu per satu secara cepat." },
+                { ind: 3, type: "num", q: "Jika ada 8 siswa memilih Balap Karung, berapa garis tunggal sisa setelah 1 ikat turus berisi 5?", ans: 3, hint: "8 dikurangi 5 = 3." }
+            ],
+            4: [
+                { ind: 4, type: "num", q: "Terdapat turus 卌 卌 卌 𝄀. Berapakah nilai frekuensinya?", ans: 16, hint: "(5 + 5 + 5) + 1 = 16." },
+                { ind: 4, type: "mc", q: "Apa yang dimaksud dengan 'Frekuensi' dalam tabel data?", opts: ["Nama jenis kegiatan", "Banyaknya kemunculan data (jumlah)", "Judul dari sebuah gambar", "Warna dari piktogram"], ans: 1, hint: "Frekuensi menunjukkan angka jumlah data yang tercatat." },
+                { ind: 4, type: "num", q: "Daftar data acak nilai matematika: 7, 8, 7, 9, 7, 8. Berapa frekuensi siswa yang mendapat nilai 7?", ans: 3, hint: "Hitung berapa kali angka 7 muncul pada daftar." },
+                { ind: 4, type: "num", q: "Hasil turus jajanan: Es Teh (10), Siomay (8), Cilok (5). Berapa jumlah frekuensi seluruh data tersebut?", ans: 23, hint: "Jumlahkan 10 + 8 + 5." },
+                { ind: 4, type: "tf", q: "Nilai frekuensi selalu dituliskan menggunakan angka (bilangan).", ans: true, hint: "Turus menggunakan garis, sedangkan frekuensi menggunakan angka." },
+                { ind: 4, type: "num", q: "Data hobi: Renang (卌 𝄀𝄀), Lari (卌 卌). Berapa selisih frekuensi Lari dan Renang?", ans: 3, hint: "Frekuensi Lari = 10, Renang = 7. Selisih = 10 - 7." },
+                { ind: 4, type: "mc", q: "Jika frekuensi suatu data adalah 0, artinya...", opts: ["Data sangat banyak", "Data tersebut tidak dipilih sama sekali", "Data salah hitung", "Data berbentuk piktogram"], ans: 1, hint: "Frekuensi 0 berarti tidak ada objek yang sesuai." },
+                { ind: 4, type: "tf", q: "Mengubah turus menjadi frekuensi dilakukan dengan cara menjumlahkan garis turus.", ans: true, hint: "Frekuensi adalah bentuk angka dari garis turus." }
+            ],
+            5: [
+                { ind: 5, type: "mc", q: "Berdasarkan Tabel Jajanan: [Bakso: 15, Mie: 8, Es Buah: 20]. Jajanan apakah yang PENGGEMARNYA TERBANYAK?", opts: ["Bakso", "Mie", "Es Buah", "Semua Sama"], ans: 2, hint: "Lihat angka frekuensi paling tinggi (20)." },
+                { ind: 5, type: "num", q: "Berdasarkan Tabel: [Kerupuk: 12, Balap Karung: 18]. Berapa selisih siswa yang memilih Balap Karung dan Kerupuk?", ans: 6, hint: "Hitung 18 - 12." },
+                { ind: 9, type: "mc", q: "Langkah pertama dalam menyajikan data acak ke bentuk tabel yang rapi adalah...", opts: ["Mewarnai kertas", "Mengelompokkan data yang sama dan menghitung jumlahnya", "Membuat garis lingkaran", "Langsung menebak jawabannya"], ans: 1, hint: "Data mentah harus dihitung dan dikelompokkan dulu." },
+                { ind: 5, type: "num", q: "Tabel Nilai: [Nilai 80: 10 anak, Nilai 90: 5 anak, Nilai 100: 2 anak]. Berapa total seluruh siswa dalam tabel?", ans: 17, hint: "Jumlahkan frekuensi: 10 + 5 + 2." },
+                { ind: 5, type: "tf", q: "Tabel data terdiri dari kolom kategori dan kolom frekuensi.", ans: true, hint: "Tabel sederhana menyajikan nama kategori dan frekuensinya." },
+                { ind: 5, type: "mc", q: "Di tabel tertera: [Sepatu Hitam: 25, Sepatu Putih: ?]. Jika total siswa 40, berapa siswa bermerek Sepatu Putih?", opts: ["10", "15", "20", "25"], ans: 1, hint: "Hitung 40 - 25." },
+                { ind: 9, type: "tf", q: "Menyajikan data ke dalam tabel membuat data lebih mudah dibaca daripada sekadar daftar acak.", ans: true, hint: "Tabel menyusun data secara terstruktur." },
+                { ind: 5, type: "num", q: "Berdasarkan Tabel: [Buku: 14, Pensil: 10]. Berapa total barang yang ada?", ans: 24, hint: "Hitung 14 + 10." }
+            ],
+            6: [
+                { ind: 6, type: "mc", q: "Pada piktogram, jika 1 gambar 🎈 mewakili 5 balon asli, maka 3 gambar 🎈 mewakili... balon.", opts: ["3", "8", "15", "20"], ans: 2, hint: "Perkalikan jumlah simbol dengan skalanya: 3 x 5." },
+                { ind: 7, type: "num", q: "Jika 1 simbol ⚽ mewakili 10 bola. Berapakah jumlah bola jika ada 4 setengah simbol ⚽?", ans: 45, hint: "4 simbol utuh = 40. Setengah simbol = 5. Total = 45." },
+                { ind: 10, type: "mc", q: "Jika kita memiliki data jumlah siswa yang sangat banyak (misal: 50, 100, 150), skala simbol piktogram yang paling cocok adalah...", opts: ["1 simbol = 1 siswa", "1 simbol = 50 siswa", "1 simbol = 1000 siswa", "1 simbol = 0.1 siswa"], ans: 1, hint: "Gunakan skala yang pas agar tidak menggambar terlalu banyak simbol." },
+                { ind: 6, type: "tf", q: "Piktogram adalah penyajian data yang menggunakan gambar atau simbol.", ans: true, hint: "Pikto berarti gambar." },
+                { ind: 7, type: "num", q: "Skala piktogram: 1 📚 = 2 buku. Jika Siti memiliki 12 buku, berapa simbol 📚 yang harus digambar?", ans: 6, hint: "Bagilah jumlah buku dengan skalanya: 12 / 2." },
+                { ind: 6, type: "mc", q: "Jika 1 simbol ⭐ mewakili 4 bintang asli. Apa arti dari setengah gambar ⭐?", opts: ["1 bintang", "2 bintang", "3 bintang", "4 bintang"], ans: 1, hint: "Setengah dari 4 adalah 2." },
+                { ind: 10, type: "tf", q: "Pemilihan simbol piktogram sebaiknya sesuai dengan topik data yang disajikan.", ans: true, hint: "Misalnya data bola memakai simbol bola." },
+                { ind: 7, type: "num", q: "Jika 1 🍎 = 5 kg apel. Ada 2 simbol utuh dan 1 setengah simbol. Berapa kg apel seluruhnya?", ans: 12.5, hint: "5 + 5 + 2.5 = 12.5." }
+            ],
+            7: [
+                { ind: 11, type: "mc", q: "Pada diagram batang, tinggi atau panjangnya batang menunjukkan...", opts: ["Nama kategori", "Banyaknya frekuensi data", "Warna kesukaan", "Judul grafik"], ans: 1, hint: "Makin tinggi batang, makin besar frekuensinya." },
+                { ind: 8, type: "mc", q: "Batang Stan Pramuka tingginya 50, sedangkan Batang Stan Seni tingginya 30. Pernyataan yang benar adalah...", opts: ["Pengunjung Stan Pramuka lebih sedikit", "Pengunjung Stan Pramuka lebih banyak daripada Stan Seni", "Pengunjung kedua stan sama banyak", "Stan Seni paling populer"], ans: 1, hint: "50 lebih besar dari 30." },
+                { ind: 11, type: "num", q: "Jika garis mendatar menunjukkan Hari (Senin-Jumat) dan garis tegak menunjukkan Pengunjung (0-100). Berapa tinggi batang jika pengunjung hari Selasa adalah 75?", ans: 75, hint: "Tinggi batang sesuai dengan angka pada sumbu tegak." },
+                { ind: 8, type: "num", q: "Batang A = 20, Batang B = 35. Berapakah selisih tinggi kedua batang tersebut?", ans: 15, hint: "35 dikurangi 20." },
+                { ind: 11, type: "tf", q: "Penggaris bantu horizontal pada diagram batang berguna membaca nilai frekuensi secara tepat.", ans: true, hint: "Garis bantu menghubungkan puncak batang ke angka sumbu tegak." },
+                { ind: 8, type: "mc", q: "Urutan kategori dari yang TERBANYAK berdasarkan tinggi batang [A: 10, B: 30, C: 20] adalah...", opts: ["A, B, C", "B, C, A", "C, B, A", "B, A, C"], ans: 1, hint: "Urutkan dari angka tertinggi: 30 (B), 20 (C), 10 (A)." },
+                { ind: 11, type: "tf", q: "Sumbu mendatar pada diagram batang biasanya berisi nama-nama kategori.", ans: true, hint: "Sumbu mendatar = nama kategori, sumbu tegak = frekuensi." },
+                { ind: 8, type: "num", q: "Batang Merah = 14, Batang Biru = 18, Batang Hijau = 12. Berapa total seluruh nilai data ketiga batang?", ans: 44, hint: "14 + 18 + 12 = 44." }
+            ],
+            8: [
+                { ind: 12, type: "mc", q: "Dalam kotak terdapat 9 bola MERAH dan 1 bola BIRU. Jika kamu mengambil 1 bola tanpa melihat, kejadian yang PALING MUNGKIN terjadi adalah...", opts: ["Terambil bola biru", "Terambil bola merah", "Terambil bola kuning", "Pasti terambil bola hijau"], ans: 1, hint: "Jumlah bola merah jauh lebih banyak." },
+                { ind: 13, type: "mc", q: "Pernyataan: 'Matahari terbit dari sebelah timur pada pagi hari' tergolong kejadian yang...", opts: ["Pasti terjadi", "Mungkin terjadi", "Tidak mungkin terjadi", "Ragu-ragu"], ans: 0, hint: "Matahari selalu terbit dari timur setiap hari." },
+                { ind: 13, type: "mc", q: "Pernyataan: 'Seekor kucing bertelur menghasilkan anak burung' tergolong kejadian yang...", opts: ["Pasti", "Mungkin", "Tidak Mungkin", "Sering terjadi"], ans: 2, hint: "Kucing adalah mamalia yang melahirkan, bukan bertelur." },
+                { ind: 12, type: "tf", q: "Jika isi kotak adalah 5 bola hijau dan 5 bola kuning, maka peluang terambil bola hijau dan kuning adalah SAMA BESAR.", ans: true, hint: "Jumlah kedua bola sama banyak." },
+                { ind: 13, type: "mc", q: "Manakah contoh kejadian yang MUNGKIN terjadi (bisa terjadi, bisa tidak)?", opts: ["Besok sore akan turun hujan", "Manusia bernapas membutuhkan udara", "Sapi bisa terbang tinggi ke awan", "Satu minggu terdiri dari 7 hari"], ans: 0, hint: "Cuaca besok bisa hujan atau cerah." },
+                { ind: 12, type: "mc", q: "Di dalam kantong HANYA ADA kelereng putih. Jika kamu mengambil satu kelereng, terambil kelereng hitam adalah kejadian yang...", opts: ["Pasti", "Mungkin", "Tidak mungkin", "Sangat mungkin"], ans: 2, hint: "Tidak ada kelereng hitam sama sekali dalam kantong." },
+                { ind: 13, type: "tf", q: "Mendapatkan angka 7 saat melempar satu dadu standar (angka 1-6) adalah kejadian yang TIDAK MUNGKIN.", ans: true, hint: "Dadu standar hanya memiliki angka 1 sampai 6." },
+                { ind: 12, type: "num", q: "Ada 8 bola merah dan 2 bola biru. Berapa total bola dalam kotak undian?", ans: 10, hint: "Hitung 8 + 2." }
+            ],
+            9: [
+                { ind: 14, type: "mc", q: "Data Survei Lomba Favorit: [Balap Karung: 40 anak, Mewarnai: 10 anak]. Keputusan panitia yang PALING TEPAT adalah...", opts: ["Membatalkan lomba balap karung", "Sediakan lapangan lebih luas dan hadiah lebih untuk Balap Karung", "Hanya membuka lomba mewarnai", "Tidak perlu mengadakan lomba"], ans: 1, hint: "Gunakan data terbanyak untuk mengambil keputusan tepat." },
+                { ind: 14, type: "mc", q: "Data Penjualan Makanan: [Es Buah: 100 porsi, Teh Hangat: 5 porsi]. Kesimpulan yang benar mengenai minat pembeli adalah...", opts: ["Pembeli lebih menyukai minuman dingin es buah", "Teh hangat paling laris", "Pembeli tidak suka es buah", "Kedua minuman sama larisnya"], ans: 0, hint: "Angka 100 menunjukkan minat es buah sangat tinggi." },
+                { ind: 8, type: "num", q: "Berdasarkan grafik: Stan A mendapat 80 poin, Stan B mendapat 60 poin. Berapa keunggulan poin Stan A dari Stan B?", ans: 20, hint: "80 - 60 = 20." },
+                { ind: 14, type: "tf", q: "Kesimpulan yang baik harus dibuat berdasarkan DATA FAKTA yang ada, bukan perkiraan semata.", ans: true, hint: "Data memberikan dasar argumen yang kuat." },
+                { ind: 14, type: "mc", q: "Manakah KESIMPULAN YANG SALAH jika data menunjukkan 90% siswa berangkat sekolah naik sepeda?", opts: ["Sepeda adalah transportasi utama siswa", "Hanya sedikit siswa yang tidak naik sepeda", "Semua siswa pasti naik mobil mewah", "Sekolah membutuhkan tempat parkir sepeda yang luas"], ans: 2, hint: "Cari opsi yang bertentangan dengan fakta 90% naik sepeda." },
+                { ind: 8, type: "mc", q: "Data pengunjung festival: Hari 1 (100 orang), Hari 2 (250 orang). Peningkatan pengunjung adalah sebesar...", opts: ["50 orang", "100 orang", "150 orang", "200 orang"], ans: 2, hint: "250 dikurangi 100 = 150." },
+                { ind: 14, type: "tf", q: "Data hasil evaluasi festival membantu panitia merencanakan acara tahun depan agar lebih baik.", ans: true, hint: "Data digunakan untuk evaluasi dan perbaikan." },
+                { ind: 14, type: "mc", q: "Jika data kupon undian terkumpul 500 lembar, tetapi panitia hanya menyiapkan 100 hadiah. Apa saranmu?", opts: ["Tambah jumlah hadiah agar peluang menang lebih besar", "Kurangi kupon", "Batalkan acara", "Abaikan saja"], ans: 0, hint: "Berdasarkan banyaknya partisipan, saran menambah hadiah sangat logis." }
+            ]
+        };
+
+        function showScreen(screenId) {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('mapScreen').classList.add('hidden');
+            document.getElementById('postScreen').classList.add('hidden');
+            document.getElementById('reportScreen').classList.add('hidden');
+
+            document.getElementById(screenId).classList.remove('hidden');
+
+            const header = document.getElementById('mainHeader');
+            const btnBack = document.getElementById('btnBackToMap');
+            const btnHint = document.getElementById('btnHintHeader');
+
+            if (screenId === 'startScreen') {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+                document.getElementById('playerDisplayName').innerText = gameState.playerName || "Detektif";
+                document.getElementById('totalStars').innerText = calculateTotalStars();
+
+                if (screenId === 'postScreen') {
+                    btnBack.classList.remove('hidden');
+                    btnHint.classList.remove('hidden');
+                } else {
+                    btnBack.classList.add('hidden');
+                    btnHint.classList.add('hidden');
+                }
+            }
+
+            if (screenId === 'mapScreen') {
+                renderMapGrid();
+            } else if (screenId === 'reportScreen') {
+                renderFinalReport();
+            }
+        }
+
+        function startGame() {
+            const input = document.getElementById('playerNameInput').value.trim();
+            if (!input) {
+                alert("Tuliskan namamu terlebih dahulu ya!");
+                return;
+            }
+            gameState.playerName = input;
+            showScreen('mapScreen');
+        }
+
+        function calculateTotalStars() {
+            let total = 0;
+            for (let p in gameState.stars) {
+                total += gameState.stars[p] || 0;
+            }
+            return total;
+        }
+
+        function renderMapGrid() {
+            const grid = document.getElementById('postsGrid');
+            grid.innerHTML = '';
+
+            POSTS.forEach((post) => {
+                const isUnlocked = post.id <= gameState.unlockedPostId;
+                const isCompleted = gameState.stars[post.id] !== undefined;
+                const stars = gameState.stars[post.id] || 0;
+
+                const card = document.createElement('div');
+                card.className = `glass-panel rounded-2xl p-5 border-2 transition-all flex flex-col justify-between ${
+                    isUnlocked ? 'border-sky-300 hover:border-sky-500 cursor-pointer btn-bounce bg-white/90' : 'border-slate-200 opacity-60 bg-slate-100/80 cursor-not-allowed'
+                }`;
+
+                let statusBadge = '';
+                if (isCompleted) {
+                    statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1">✅ Selesai (${stars} ⭐)</span>`;
+                } else if (isUnlocked) {
+                    statusBadge = `<span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-2.5 py-1 rounded-full">🔓 Terbuka</span>`;
+                } else {
+                    statusBadge = `<span class="bg-slate-200 text-slate-600 text-xs font-extrabold px-2.5 py-1 rounded-full">🔒 Terkunci</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-sky-100 border border-sky-300 flex items-center justify-center text-2xl shadow-inner">
+                            ${post.icon}
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-sky-700 uppercase">POS ${post.id}</div>
+                        <h3 class="text-lg font-bold font-game text-slate-800 mb-1">${post.title}</h3>
+                        <p class="text-xs text-slate-500">Indikator: ${post.indicators.map(i => '#' + i).join(', ')}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-amber-600">${isCompleted ? '⭐⭐⭐⭐⭐'.slice(0, stars) : 'Belum Ada Bintang'}</span>
+                        <span class="text-xs font-bold ${isUnlocked ? 'text-sky-600' : 'text-slate-400'}">${isUnlocked ? 'Masuk Pos ➡️' : 'Terkunci'}</span>
+                    </div>
+                `;
+
+                if (isUnlocked) {
+                    card.onclick = () => openPost(post.id);
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        function openPost(postId) {
+            gameState.currentPostId = postId;
+            const post = POSTS.find(p => p.id === postId);
+
+            document.getElementById('postBadge').innerText = `POS ${post.id}`;
+            document.getElementById('postTitle').innerText = `${post.icon} ${post.title}`;
+
+            // Initialize Quiz session for this post
+            initQuizSession(postId);
+
+            // Switch to Simulation tab by default
+            switchPostTab('sim');
+
+            showScreen('postScreen');
+        }
+
+        function switchPostTab(tab) {
+            const simBtn = document.getElementById('btnTabSim');
+            const quizBtn = document.getElementById('btnTabQuiz');
+            const simCont = document.getElementById('simulationContainer');
+            const quizCont = document.getElementById('quizContainer');
+
+            if (tab === 'sim') {
+                simBtn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-sky-600 text-white shadow";
+                quizBtn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 hover:bg-slate-300";
+                simCont.classList.remove('hidden');
+                quizCont.classList.add('hidden');
+                renderSimulation(gameState.currentPostId);
+            } else {
+                quizBtn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-sky-600 text-white shadow";
+                simBtn.className = "px-4 py-2 rounded-xl font-bold text-sm bg-slate-200 text-slate-700 hover:bg-slate-300";
+                quizCont.classList.remove('hidden');
+                simCont.classList.add('hidden');
+                renderCurrentQuestion();
+            }
+        }
+
+        function renderSimulation(postId) {
+            const container = document.getElementById('simulationContainer');
+            container.innerHTML = '';
+
+            switch (postId) {
+                case 1:
+                    // Pos 1: Kantin Pengamatan
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Amatilah suasana kantin di bawah ini. Hitung berapa banyak jajanan atau siswa yang sedang membeli!"
+                            </div>
+                            <!-- Interactive Visual Kantin -->
+                            <div class="bg-gradient-to-r from-orange-100 to-amber-100 p-6 rounded-2xl border-2 border-amber-300 text-center relative overflow-hidden">
+                                <div class="text-lg font-bold font-game mb-4 text-amber-900">🍜 KANTIN FESTIVAL SEKOLAH 🥤</div>
+                                <div class="flex flex-wrap justify-center gap-6 text-4xl my-4">
+                                    <div class="p-3 bg-white/80 rounded-2xl border shadow-sm flex flex-col items-center">
+                                        <span>🍵 🍵 🍵 🍵 🍵</span>
+                                        <span class="text-xs font-bold text-slate-600 mt-2">5 Es Teh</span>
+                                    </div>
+                                    <div class="p-3 bg-white/80 rounded-2xl border shadow-sm flex flex-col items-center">
+                                        <span>🍜 🍜 🍜</span>
+                                        <span class="text-xs font-bold text-slate-600 mt-2">3 Mangkuk Bakso</span>
+                                    </div>
+                                    <div class="p-3 bg-white/80 rounded-2xl border shadow-sm flex flex-col items-center">
+                                        <span>🍌 🍌 🍌 🍌</span>
+                                        <span class="text-xs font-bold text-slate-600 mt-2">4 Pisang Goreng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200 text-center">
+                                <p class="text-sm font-bold text-slate-700 mb-2">💡 Kuis Pengamatan Singkat:</p>
+                                <p class="text-sm">Berapa jumlah total seluruh jajanan yang ada di meja kantin di atas?</p>
+                                <div class="flex justify-center gap-2 mt-3">
+                                    <button onclick="checkSim1(10)" class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded-xl font-bold">10</button>
+                                    <button onclick="checkSim1(12)" class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded-xl font-bold">12</button>
+                                    <button onclick="checkSim1(15)" class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-800 rounded-xl font-bold">15</button>
+                                </div>
+                                <p id="sim1Feedback" class="text-xs font-bold mt-2 text-emerald-600"></p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 2:
+                    // Pos 2: Lemari Pengelompokan
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Kelompokkan item-item di bawah ini ke dalam dua lemari kategori yang benar!"
+                            </div>
+                            <!-- Items Source -->
+                            <div id="dragItems" class="flex flex-wrap justify-center gap-3 p-4 bg-slate-100 rounded-2xl border">
+                                <div draggable="true" ondragstart="drag(event)" id="item1" data-cat="makanan" class="px-3 py-2 bg-white rounded-xl shadow cursor-grab font-bold text-lg border">🍎 Apel</div>
+                                <div draggable="true" ondragstart="drag(event)" id="item2" data-cat="tulis" class="px-3 py-2 bg-white rounded-xl shadow cursor-grab font-bold text-lg border">✏️ Pensil</div>
+                                <div draggable="true" ondragstart="drag(event)" id="item3" data-cat="makanan" class="px-3 py-2 bg-white rounded-xl shadow cursor-grab font-bold text-lg border">🍌 Pisang</div>
+                                <div draggable="true" ondragstart="drag(event)" id="item4" data-cat="tulis" class="px-3 py-2 bg-white rounded-xl shadow cursor-grab font-bold text-lg border">📏 Penggaris</div>
+                            </div>
+                            <!-- Drop Boxes -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div ondrop="drop(event, 'makanan')" ondragover="allowDrop(event)" class="p-4 bg-amber-50 border-2 border-dashed border-amber-400 rounded-2xl min-h-[120px] text-center">
+                                    <h4 class="font-bold text-amber-900 font-game mb-2">🧺 Kategori Makanan</h4>
+                                    <div id="boxMakanan" class="flex flex-wrap gap-2 justify-center"></div>
+                                </div>
+                                <div ondrop="drop(event, 'tulis')" ondragover="allowDrop(event)" class="p-4 bg-sky-50 border-2 border-dashed border-sky-400 rounded-2xl min-h-[120px] text-center">
+                                    <h4 class="font-bold text-sky-900 font-game mb-2">✏️ Kategori Alat Tulis</h4>
+                                    <div id="boxTulis" class="flex flex-wrap gap-2 justify-center"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 3:
+                    // Pos 3: Papan Turus
+                    window.sim3Counts = { balap: 0, kerupuk: 0 };
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Klik tombol lomba untuk menambah suara. Ingat! Garis ke-5 otomatis digambar miring menyilang 4 garis sebelumnya!"
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
+                                    <h4 class="font-bold font-game text-slate-800">🏃‍♂️ Balap Karung</h4>
+                                    <div id="tallyBalap" class="my-4 min-h-[50px] flex items-center justify-center gap-2"></div>
+                                    <button onclick="addTally('balap')" class="bg-sky-500 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded-xl text-sm btn-bounce">
+                                        + Tambah Suara
+                                    </button>
+                                </div>
+                                <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
+                                    <h4 class="font-bold font-game text-slate-800">Kerupuk</h4>
+                                    <div id="tallyKerupuk" class="my-4 min-h-[50px] flex items-center justify-center gap-2"></div>
+                                    <button onclick="addTally('kerupuk')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-sm btn-bounce">
+                                        + Tambah Suara
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 4:
+                    // Pos 4: Hitung Cepat / Frekuensi
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Hitung garis turus di tabel, lalu ketik angka frekuensinya di kolom kanan!"
+                            </div>
+                            <div class="bg-white rounded-2xl border overflow-hidden p-4">
+                                <table class="w-full text-center border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-100 border-b">
+                                            <th class="p-2">Lomba</th>
+                                            <th class="p-2">Turus</th>
+                                            <th class="p-2">Frekuensi (Angka)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b">
+                                            <td class="p-2 font-bold">Tarik Tambang</td>
+                                            <td class="p-2">${renderTallyHTML(7)}</td>
+                                            <td class="p-2"><input type="number" id="freq1" placeholder="?" class="w-16 p-2 border rounded-lg text-center font-bold"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-bold">Makan Kerupuk</td>
+                                            <td class="p-2">${renderTallyHTML(12)}</td>
+                                            <td class="p-2"><input type="number" id="freq2" placeholder="?" class="w-16 p-2 border rounded-lg text-center font-bold"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button onclick="checkSim4()" class="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl btn-bounce">
+                                    Cek Jawaban Frekuensi
+                                </button>
+                                <p id="sim4Feedback" class="text-xs font-bold text-center mt-2"></p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 5:
+                    // Pos 5: Meja Tabel
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Susun data mentah hasil penjualan stan festival berikut ke dalam bentuk tabel yang rapi!"
+                            </div>
+                            <div class="bg-sky-50 p-3 rounded-xl border border-sky-200 text-xs font-mono">
+                                Data Mentah Jajanan Laris: [Es Teh, Es Teh, Siomay, Es Teh, Siomay, Bakso, Es Teh, Bakso]
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border space-y-3">
+                                <div class="grid grid-cols-2 gap-2 text-sm font-bold text-slate-600">
+                                    <div>Nama Jajanan</div>
+                                    <div>Jumlah (Frekuensi)</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 items-center">
+                                    <span class="font-bold text-slate-800">🍵 Es Teh</span>
+                                    <input type="number" id="sim5EsTeh" placeholder="Jumlah?" class="p-2 border rounded-xl">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 items-center">
+                                    <span class="font-bold text-slate-800">🥟 Siomay</span>
+                                    <input type="number" id="sim5Siomay" placeholder="Jumlah?" class="p-2 border rounded-xl">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 items-center">
+                                    <span class="font-bold text-slate-800">🍜 Bakso</span>
+                                    <input type="number" id="sim5Bakso" placeholder="Jumlah?" class="p-2 border rounded-xl">
+                                </div>
+                                <button onclick="checkSim5()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-xl btn-bounce">
+                                    Simpan ke Tabel
+                                </button>
+                                <p id="sim5Feedback" class="text-xs font-bold text-center"></p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 6:
+                    // Pos 6: Galeri Piktogram
+                    window.sim6Count = 2;
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Gunakan tombol + / - untuk mengatur piktogram balon terhias. Keterangan: 1 🎈 = 5 Balon!"
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border text-center">
+                                <h4 class="font-bold font-game text-slate-800 mb-2">Penjualan Balon Festival</h4>
+                                <div id="pictoDisplay" class="text-3xl my-3 tracking-widest min-h-[40px]">🎈 🎈</div>
+                                <div class="flex justify-center gap-3">
+                                    <button onclick="updatePicto(-1)" class="px-4 py-2 bg-rose-500 text-white font-black rounded-xl">-</button>
+                                    <button onclick="updatePicto(1)" class="px-4 py-2 bg-emerald-500 text-white font-black rounded-xl">+</button>
+                                </div>
+                                <div class="mt-4 p-3 bg-amber-50 rounded-xl text-sm font-bold text-amber-900">
+                                    Total Nilai Balon Asli: <span id="pictoVal" class="text-xl text-emerald-600 font-black">10</span> Balon
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 7:
+                    // Pos 7: Menara Batang
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Geser penggaris bantu horizontal di bawah ini untuk membantu membaca nilai puncak diagram batang!"
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border relative overflow-hidden">
+                                <h4 class="font-bold font-game text-slate-800 text-center mb-4">Pengunjung Stan Festival</h4>
+                                <!-- Chart Area -->
+                                <div class="h-48 flex items-end justify-around border-b-2 border-l-2 border-slate-400 relative px-4">
+                                    <!-- Interactive Horizontal Ruler -->
+                                    <div id="rulerLine" class="absolute left-0 right-0 border-t-2 border-dashed border-rose-500 pointer-events-none transition-all" style="bottom: 50%;"></div>
+                                    
+                                    <div class="w-16 bg-sky-400 rounded-t-lg flex items-center justify-center font-bold text-white text-xs" style="height: 60%;">60</div>
+                                    <div class="w-16 bg-amber-400 rounded-t-lg flex items-center justify-center font-bold text-white text-xs" style="height: 90%;">90</div>
+                                    <div class="w-16 bg-emerald-400 rounded-t-lg flex items-center justify-center font-bold text-white text-xs" style="height: 40%;">40</div>
+                                </div>
+                                <div class="flex justify-around text-xs font-bold text-slate-600 mt-2">
+                                    <span>Stan A</span>
+                                    <span>Stan B</span>
+                                    <span>Stan C</span>
+                                </div>
+                                <!-- Slider Control -->
+                                <div class="mt-4">
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Geser Penggaris Bantu:</label>
+                                    <input type="range" min="0" max="100" value="50" oninput="moveRuler(this.value)" class="w-full">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 8:
+                    // Pos 8: Kotak Undian Ajaib & Ketidakpastian
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Tekan Ambil Bola! Warna dengan jumlah bola lebih banyak akan memiliki peluang lebih besar terambil."
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border text-center">
+                                <div class="text-3xl mb-2">🎁 🔴🔴🔴🔴🔴 🔵</div>
+                                <p class="text-xs text-slate-500 mb-3">(Isi Kotak: 5 Bola Merah & 1 Bola Biru)</p>
+                                <button onclick="drawBall()" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-6 py-2.5 rounded-xl btn-bounce">
+                                    🎲 Ambil Bola Sekarang
+                                </button>
+                                <div id="ballResult" class="mt-3 text-lg font-bold"></div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 9:
+                    // Pos 9: Rapat Panitia
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-sm">
+                                <b>👩‍🏫 Bu Rani:</b> "Selamat datang di Rapat Panitia! Analisis data survei di bawah ini untuk mengambil keputusan terbaik."
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border space-y-3">
+                                <h4 class="font-bold text-slate-800 font-game">Data Hasil Survei Minat Lomba:</h4>
+                                <div class="text-sm space-y-1">
+                                    <p>• Balap Karung: 80% Siswa</p>
+                                    <p>• Catur: 20% Siswa</p>
+                                </div>
+                                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs">
+                                    <b>Pertanyaan Panitia:</b> Lomba manakah yang perlu disiapkan panggung utama dan hadiah lebih banyak?
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="checkSim9('karung')" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-xl text-sm">Balap Karung</button>
+                                    <button onclick="checkSim9('catur')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-xl text-sm">Catur</button>
+                                </div>
+                                <p id="sim9Feedback" class="text-xs font-bold text-center"></p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                default:
+                    container.innerHTML = `<p>Simulasi siap dimainkan!</p>`;
+            }
+        }
+
+        function checkSim1(ans) {
+            const fb = document.getElementById('sim1Feedback');
+            if (ans === 12) {
+                fb.className = "text-xs font-bold mt-2 text-emerald-600";
+                fb.innerText = "✨ Tepat sekali! 5 Es Teh + 3 Bakso + 4 Pisang = 12 jajanan.";
+            } else {
+                fb.className = "text-xs font-bold mt-2 text-rose-600";
+                fb.innerText = "❌ Coba hitung kembali seluruh item di meja ya!";
+            }
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev, cat) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var item = document.getElementById(data);
+            if (item.getAttribute('data-cat') === cat) {
+                if (cat === 'makanan') document.getElementById('boxMakanan').appendChild(item);
+                else document.getElementById('boxTulis').appendChild(item);
+            } else {
+                alert("Kategori belum sesuai, coba lagi ya!");
+            }
+        }
+
+        function renderTallyHTML(num) {
+            let fullGroup = Math.floor(num / 5);
+            let rem = num % 5;
+            let html = '<div class="inline-flex gap-2 items-center">';
+            for (let i = 0; i < fullGroup; i++) {
+                html += `<div class="tally-mark"><div class="tally-line"></div><div class="tally-line"></div><div class="tally-line"></div><div class="tally-line"></div><div class="tally-slash"></div></div>`;
+            }
+            if (rem > 0) {
+                html += `<div class="tally-mark">`;
+                for (let j = 0; j < rem; j++) html += `<div class="tally-line"></div>`;
+                html += `</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function addTally(key) {
+            window.sim3Counts[key]++;
+            const target = key === 'balap' ? 'tallyBalap' : 'tallyKerupuk';
+            document.getElementById(target).innerHTML = renderTallyHTML(window.sim3Counts[key]);
+        }
+
+        function checkSim4() {
+            const f1 = parseInt(document.getElementById('freq1').value);
+            const f2 = parseInt(document.getElementById('freq2').value);
+            const fb = document.getElementById('sim4Feedback');
+            if (f1 === 7 && f2 === 12) {
+                fb.className = "text-xs font-bold text-center mt-2 text-emerald-600";
+                fb.innerText = "🎉 Luar Biasa! Kamu berhasil membaca frekuensi turus dengan sangat tepat!";
+            } else {
+                fb.className = "text-xs font-bold text-center mt-2 text-rose-600";
+                fb.innerText = "⚠️️ Masih ada yang kurang tepat. Ingat 1 sekat turus = 5!";
+            }
+        }
+
+        function checkSim5() {
+            const e = parseInt(document.getElementById('sim5EsTeh').value);
+            const s = parseInt(document.getElementById('sim5Siomay').value);
+            const b = parseInt(document.getElementById('sim5Bakso').value);
+            const fb = document.getElementById('sim5Feedback');
+            if (e === 4 && s === 2 && b === 2) {
+                fb.className = "text-xs font-bold text-center text-emerald-600";
+                fb.innerText = "🎉 Hebat! Tabel data berhasil disusun dengan benar!";
+            } else {
+                fb.className = "text-xs font-bold text-center text-rose-600";
+                fb.innerText = "❌ Hitung lagi jumlah masing-masing item pada data mentah ya!";
+            }
+        }
+
+        function updatePicto(val) {
+            window.sim6Count = Math.max(1, window.sim6Count + val);
+            let display = '';
+            for (let i = 0; i < window.sim6Count; i++) display += '🎈 ';
+            document.getElementById('pictoDisplay').innerText = display;
+            document.getElementById('pictoVal').innerText = window.sim6Count * 5;
+        }
+
+        function moveRuler(val) {
+            document.getElementById('rulerLine').style.bottom = val + '%';
+        }
+
+        function drawBall() {
+            const res = document.getElementById('ballResult');
+            const rand = Math.random();
+            if (rand < 0.833) {
+                res.innerHTML = "<span class='text-rose-600'>🔴 Terambil Bola MERAH!</span>";
+            } else {
+                res.innerHTML = "<span class='text-sky-600'>🔵 Terambil Bola BIRU!</span>";
+            }
+        }
+
+        function checkSim9(choice) {
+            const fb = document.getElementById('sim9Feedback');
+            if (choice === 'karung') {
+                fb.className = "text-xs font-bold text-center text-emerald-600";
+                fb.innerText = "✨ Tepat Sekali! Karena 80% minat siswa ada di Balap Karung!";
+            } else {
+                fb.className = "text-xs font-bold text-center text-rose-600";
+                fb.innerText = "⚠️ Perhatikan data persentase terbesar!";
+            }
+        }
+
+        function initQuizSession(postId) {
+            const pool = QUESTION_BANK[postId] || [];
+            // Shuffle and pick 4-5 questions randomly
+            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, Math.min(5, pool.length));
+
+            gameState.activeQuizSession = {
+                questions: selected,
+                currentIndex: 0,
+                attemptCount: 0,
+                earnedStarsPost: 0
+            };
+        }
+
+        function renderCurrentQuestion() {
+            const session = gameState.activeQuizSession;
+            const qData = session.questions[session.currentIndex];
+
+            if (!qData) {
+                finishPostQuiz();
+                return;
+            }
+
+            document.getElementById('currentQuestionNum').innerText = session.currentIndex + 1;
+            document.getElementById('totalQuestionsNum').innerText = session.questions.length;
+            document.getElementById('questionIndicatorCode').innerText = `Indikator ${qData.ind}`;
+
+            document.getElementById('buRaniQuizMessage').innerText = "Bacalah pertanyaan dengan teliti ya! Kamu punya 2 kesempatan menjawab.";
+
+            document.getElementById('btnCheckAnswer').classList.remove('hidden');
+            document.getElementById('btnNextQuestion').classList.add('hidden');
+
+            const box = document.getElementById('questionBox');
+            box.innerHTML = '';
+
+            const title = document.createElement('h3');
+            title.className = "text-lg font-bold font-game text-slate-800 mb-4";
+            title.innerText = qData.q;
+            box.appendChild(title);
+
+            // Render Input based on type
+            if (qData.type === 'mc') {
+                const optDiv = document.createElement('div');
+                optDiv.className = "space-y-2";
+                qData.opts.forEach((opt, idx) => {
+                    optDiv.innerHTML += `
+                        <label class="flex items-center gap-3 p-3 bg-white hover:bg-sky-50 rounded-xl border border-slate-200 cursor-pointer font-medium text-slate-700">
+                            <input type="radio" name="quizOpt" value="${idx}" class="w-4 h-4 text-sky-600">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+                box.appendChild(optDiv);
+            } else if (qData.type === 'num') {
+                box.innerHTML += `
+                    <input type="number" id="numAnswer" placeholder="Ketik jawaban angka di sini..." class="w-full p-3 rounded-xl border-2 border-sky-300 focus:border-sky-500 focus:outline-none text-lg font-bold">
+                `;
+            } else if (qData.type === 'tf') {
+                box.innerHTML += `
+                    <div class="flex gap-4">
+                        <button onclick="selectTF(true)" id="btnTFTrue" class="flex-1 p-4 bg-emerald-100 border-2 border-emerald-400 hover:bg-emerald-200 rounded-2xl font-bold text-emerald-900 text-center">
+                            👍 BENAR
+                        </button>
+                        <button onclick="selectTF(false)" id="btnTFFalse" class="flex-1 p-4 bg-rose-100 border-2 border-rose-400 hover:bg-rose-200 rounded-2xl font-bold text-rose-900 text-center">
+                            👎 SALAH
+                        </button>
+                    </div>
+                `;
+                window.selectedTFVal = null;
+            }
+        }
+
+        function selectTF(val) {
+            window.selectedTFVal = val;
+            document.getElementById('btnTFTrue').className = val === true ?
+                "flex-1 p-4 bg-emerald-500 text-white font-bold rounded-2xl border-2 border-emerald-600 shadow-inner text-center" :
+                "flex-1 p-4 bg-emerald-100 border-2 border-emerald-400 rounded-2xl font-bold text-emerald-900 text-center";
+
+            document.getElementById('btnTFFalse').className = val === false ?
+                "flex-1 p-4 bg-rose-500 text-white font-bold rounded-2xl border-2 border-rose-600 shadow-inner text-center" :
+                "flex-1 p-4 bg-rose-100 border-2 border-rose-400 rounded-2xl font-bold text-rose-900 text-center";
+        }
+
+        function checkCurrentAnswer() {
+            const session = gameState.activeQuizSession;
+            const qData = session.questions[session.currentIndex];
+            let userAns = null;
+
+            if (qData.type === 'mc') {
+                const checked = document.querySelector('input[name="quizOpt"]:checked');
+                if (!checked) { alert("Pilih salah satu jawaban terlebih dahulu!"); return; }
+                userAns = parseInt(checked.value);
+            } else if (qData.type === 'num') {
+                const val = document.getElementById('numAnswer').value;
+                if (val === "") { alert("Ketikkan jawaban angka terlebih dahulu!"); return; }
+                userAns = parseFloat(val);
+            } else if (qData.type === 'tf') {
+                if (window.selectedTFVal === null) { alert("Pilih BENAR atau SALAH!"); return; }
+                userAns = window.selectedTFVal;
+            }
+
+            const isCorrect = userAns === qData.ans;
+
+            // Track Indicator Statistics
+            const indId = qData.ind;
+            gameState.indicatorScores[indId].total++;
+
+            if (isCorrect) {
+                gameState.indicatorScores[indId].correct++;
+                session.earnedStarsPost++;
+                document.getElementById('buRaniQuizMessage').innerText = "🌟 " + getRandomPraise();
+                document.getElementById('btnCheckAnswer').classList.add('hidden');
+                document.getElementById('btnNextQuestion').classList.remove('hidden');
+            } else {
+                session.attemptCount++;
+                if (session.attemptCount === 1) {
+                    // Opportunity 2 with hint
+                    document.getElementById('buRaniQuizMessage').innerText = "💡 Petunjuk Bu Rani: " + qData.hint;
+                } else {
+                    // Failed twice
+                    let correctLabel = qData.ans;
+                    if (qData.type === 'mc') correctLabel = qData.opts[qData.ans];
+                    else if (qData.type === 'tf') correctLabel = qData.ans ? 'BENAR' : 'SALAH';
+
+                    document.getElementById('buRaniQuizMessage').innerText = `❌ Jawaban yang tepat adalah: "${correctLabel}". Semangat, coba lagi di soal berikutnya!`;
+                    document.getElementById('btnCheckAnswer').classList.add('hidden');
+                    document.getElementById('btnNextQuestion').classList.remove('hidden');
+                }
+            }
+        }
+
+        function getRandomPraise() {
+            const praises = [
+                "Hebat sekali! Jawabanmu tepat 100%!",
+                "Luar biasa! Kamu adalah Detektif Data sejati!",
+                "Tepat sekali! Analisis data kamu sangat teliti!",
+                "Keren! Bu Rani bangga dengan kecermatanmu!"
+            ];
+            return praises[Math.floor(Math.random() * praises.length)];
+        }
+
+        function nextQuestion() {
+            const session = gameState.activeQuizSession;
+            session.currentIndex++;
+            session.attemptCount = 0;
+            renderCurrentQuestion();
+        }
+
+        function finishPostQuiz() {
+            const session = gameState.activeQuizSession;
+            const postId = gameState.currentPostId;
+
+            // Save Stars
+            gameState.stars[postId] = session.earnedStarsPost;
+
+            // Unlock Next Post
+            if (postId === gameState.unlockedPostId && postId < 9) {
+                gameState.unlockedPostId = postId + 1;
+            }
+
+            if (postId === 9) {
+                alert("🎉 Selamat! Kamu telah menyelesaikan seluruh 9 Pos Misi Detektif Data!");
+                showScreen('reportScreen');
+            } else {
+                alert(`✨ Pos ${postId} Selesai! Kamu mendapatkan ${session.earnedStarsPost} Bintang ⭐!`);
+                showScreen('mapScreen');
+            }
+        }
+
+        function renderFinalReport() {
+            document.getElementById('reportPlayerName').innerText = gameState.playerName || "Pemain";
+            const total = calculateTotalStars();
+            document.getElementById('reportTotalStars').innerText = `${total} ⭐`;
+
+            // Title Badge Assignment
+            let badgeText = "Detektif Pemula 🔍";
+            if (total >= 35) badgeText = "Detektif Ahli 🏆";
+            else if (total >= 20) badgeText = "Detektif Andal 🌟";
+            document.getElementById('reportBadge').innerText = badgeText;
+
+            // Indicator Table
+            const tbody = document.getElementById('indicatorTableBody');
+            tbody.innerHTML = '';
+
+            for (let i = 1; i <= 14; i++) {
+                const stat = gameState.indicatorScores[i];
+                let statusBadge = '';
+
+                if (stat.total === 0) {
+                    statusBadge = `<span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Belum Diuji</span>`;
+                } else {
+                    const pct = (stat.correct / stat.total) * 100;
+                    if (pct >= 80) {
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold">✅ Sudah Menguasai</span>`;
+                    } else if (pct >= 50) {
+                        statusBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">⚠️ Hampir Menguasai</span>`;
+                    } else {
+                        statusBadge = `<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full font-bold">📖 Perlu Berlatih lagi</span>`;
+                    }
+                }
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2.5 font-bold text-sky-800">Indikator ${i}</td>
+                        <td class="p-2.5 text-slate-700">${INDICATORS[i]}</td>
+                        <td class="p-2.5 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        function restartFullGame() {
+            gameState.unlockedPostId = 1;
+            gameState.stars = {};
+            for (let i = 1; i <= 14; i++) {
+                gameState.indicatorScores[i] = { correct: 0, total: 0 };
+            }
+            showScreen('startScreen');
+        }
+
+        function openMaterialModal() {
+            const postId = gameState.currentPostId;
+            const titleMap = {
+                1: "Materi Pos 1: Mengidentifikasi Data",
+                2: "Materi Pos 2: Mengelompokkan Data",
+                3: "Materi Pos 3: Catatan Turus",
+                4: "Materi Pos 4: Menentukan Frekuensi",
+                5: "Materi Pos 5: Penyajian Tabel",
+                6: "Materi Pos 6: Membaca Piktogram",
+                7: "Materi Pos 7: Membaca Diagram Batang",
+                8: "Materi Pos 8: Ketidakpastian & Peluang",
+                9: "Materi Pos 9: Mengambil Kesimpulan Data"
+            };
+
+            const contentMap = {
+                1: "Data adalah keterangan atau fakta nyata yang dikumpulkan dari pengamatan atau perhitungan.",
+                2: "Mengelompokkan data dilakukan dengan memasukkan benda ke kategori yang memiliki kesamaan sifat.",
+                3: "Turus menggunakan garis tegak. Setiap kelipatan 5, garis ke-5 digambar miring menyilang 4 garis sebelumnya (卌).",
+                4: "Frekuensi adalah angka jumlah kemunculan suatu data.",
+                5: "Tabel menyajikan data dalam bentuk kolom kategori dan kolom frekuensi agar mudah dibaca.",
+                6: "Piktogram menggunakan gambar/simbol. Perhatikan keterangan nilai skala untuk 1 simbol utuh maupun setengah simbol!",
+                7: "Tinggi batang pada diagram batang menunjukkan besarnya frekuensi data.",
+                8: "Kejadian dikelompokkan menjadi: PASTI (pasti terjadi), MUNGKIN (bisa terjadi/tidak), dan TIDAK MUNGKIN.",
+                9: "Kesimpulan harus diambil berdasarkan fakta angka tertinggi/terrendah dari data yang ada."
+            };
+
+            document.getElementById('materialModalTitle').innerText = titleMap[postId] || "Rangkuman Bu Rani";
+            document.getElementById('materialModalContent').innerText = contentMap[postId] || "Bacalah data dengan cermat!";
+            document.getElementById('materialModal').classList.remove('hidden');
+        }
+
+        function closeMaterialModal() {
+            document.getElementById('materialModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
